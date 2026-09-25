@@ -57,18 +57,122 @@
           <i class="fa-regular fa-calendar-days text-emerald-400"></i>
           <span id="toggle-cal-text">展開日曆檢視</span>
         </button>
+        <button id="toggle-exercise-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-emerald-500/50 px-3 py-1.5 rounded-xl text-xs text-emerald-300 hover:text-emerald-200 transition font-semibold">
+          <i class="fa-solid fa-dumbbell text-emerald-400"></i>
+          <span id="toggle-exercise-text">新增運動紀錄</span>
+        </button>
         <button id="toggle-schedule-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs text-emerald-300 transition">
           <i class="fa-solid fa-clipboard-list text-emerald-400"></i>
           <span id="toggle-schedule-text">每週訓練安排</span>
+        </button>
+        <button id="toggle-milestones-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs text-emerald-300 transition">
+          <i class="fa-solid fa-trophy text-emerald-400"></i>
+          <span id="toggle-milestones-text">腹肌目標里程碑</span>
+        </button>
+        <button id="toggle-abs-guide-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-teal-500/40 px-3 py-1.5 rounded-xl text-xs text-teal-300 transition">
+          <i class="fa-solid fa-fire text-teal-400"></i>
+          <span id="toggle-abs-guide-text">腹肌動作解析</span>
         </button>
         <button id="toggle-food-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-amber-500/40 px-3 py-1.5 rounded-xl text-xs text-amber-300 transition">
           <i class="fa-solid fa-utensils text-amber-400"></i>
           <span id="toggle-food-text">飲食卡路里紀錄</span>
         </button>
+        <button id="toggle-sleep-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-indigo-500/40 px-3 py-1.5 rounded-xl text-xs text-indigo-300 transition">
+          <i class="fa-solid fa-moon text-indigo-400"></i>
+          <span id="toggle-sleep-text">睡眠燃脂分析</span>
+        </button>
       </div>
     </div>
 
-    <!-- Weekly Training Schedule Drawer (Collapsible) -->
+    <!-- Sleep Quality & Night Fat Burn Drawer (Collapsible) -->
+    <div id="sleep-modal" class="hidden bg-slate-900 border border-indigo-500/30 rounded-2xl p-5 space-y-4 shadow-2xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-bed"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">睡眠質量與夜間燃脂修復分析</h3>
+            <p class="text-[11px] text-slate-400">深層睡眠釋放生長激素 (GH)，促進脂肪氧化、平衡瘦素與修復肌群</p>
+          </div>
+        </div>
+        <button id="close-sleep-btn" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-700">
+          <i class="fa-solid fa-xmark mr-1"></i>收起睡眠
+        </button>
+      </div>
+
+      <!-- Sleep Inputs & Quality Selector -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3 space-y-1">
+          <label class="block text-[11px] font-medium text-slate-300">昨晚睡眠時長 (小時)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="input-sleep-hours" value="7.5" min="3" max="14" step="0.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-mono font-bold text-indigo-300 focus:outline-none focus:border-indigo-500">
+            <span class="text-xs text-slate-400 shrink-0">小時</span>
+          </div>
+        </div>
+
+        <div class="sm:col-span-2 bg-slate-950/70 border border-slate-800 rounded-xl p-3 space-y-1.5">
+          <label class="block text-[11px] font-medium text-slate-300">睡眠深層質量感受</label>
+          <div class="grid grid-cols-3 gap-1.5" id="sleep-quality-selector">
+            <button type="button" data-quality="great" class="sleep-q-btn px-2 py-1.5 rounded-lg text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/50 flex flex-col items-center">
+              <span>🌟 優質深睡</span>
+              <span class="text-[9px] text-indigo-400 font-normal">精力充沛 · 燃脂最佳</span>
+            </button>
+            <button type="button" data-quality="normal" class="sleep-q-btn px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 border border-transparent hover:text-white flex flex-col items-center">
+              <span>😴 平穩良好</span>
+              <span class="text-[9px] text-slate-500 font-normal">正常醒來 · 代謝平穩</span>
+            </button>
+            <button type="button" data-quality="poor" class="sleep-q-btn px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 border border-transparent hover:text-white flex flex-col items-center">
+              <span>🥱 淺眠/熬夜</span>
+              <span class="text-[9px] text-slate-500 font-normal">易醒疲倦 · 皮質醇高</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sleep Fat Burn & Recovery Outcome Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+          <span class="text-[10px] text-slate-400 block mb-0.5"><i class="fa-solid fa-fire-flame-curved text-indigo-400 mr-1"></i>睡眠燃脂消耗</span>
+          <span id="sleep-burn-kcal" class="text-base sm:text-lg font-extrabold text-indigo-300 font-mono">485</span>
+          <span class="text-[10px] text-slate-500 block">kcal (夜間代謝)</span>
+        </div>
+
+        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+          <span class="text-[10px] text-slate-400 block mb-0.5"><i class="fa-solid fa-dna text-emerald-400 mr-1"></i>生長激素 (GH) 指數</span>
+          <span id="sleep-gh-level" class="text-base sm:text-lg font-extrabold text-emerald-400 font-mono">高峰分泌 92分</span>
+          <span class="text-[10px] text-slate-500 block">促進脂肪分解</span>
+        </div>
+
+        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+          <span class="text-[10px] text-slate-400 block mb-0.5"><i class="fa-solid fa-heart-pulse text-cyan-400 mr-1"></i>皮質醇 (壓力) 控制</span>
+          <span id="sleep-cortisol-status" class="text-base sm:text-lg font-extrabold text-cyan-300">良好低位</span>
+          <span class="text-[10px] text-slate-500 block">不易堆積腹部脂肪</span>
+        </div>
+
+        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+          <span class="text-[10px] text-slate-400 block mb-0.5"><i class="fa-solid fa-shield-virus text-amber-400 mr-1"></i>瘦素 (Leptin) 狀態</span>
+          <span id="sleep-leptin-status" class="text-base sm:text-lg font-extrabold text-amber-300">食慾穩定</span>
+          <span class="text-[10px] text-slate-500 block">不易暴飲暴食</span>
+        </div>
+      </div>
+
+      <!-- Sleep Science Guide & Biohacking Tips -->
+      <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 text-xs space-y-1.5">
+        <span class="font-bold text-indigo-300 flex items-center gap-1.5">
+          <i class="fa-solid fa-brain"></i> 科學睡眠燃脂三大關鍵
+        </span>
+        <ul class="text-[11px] text-slate-300 space-y-1 leading-relaxed list-disc list-inside">
+          <li><strong>深睡生長激素 (GH) 脈衝</strong>：人體約 70% 的日間脂肪分解荷爾蒙在深度慢波睡眠中釋放，睡眠不足 6 小時會大幅削弱夜間燃脂效率。</li>
+          <li><strong>睡前 2～3 小時避免高糖大餐</strong>：胰島素濃度過高會直接抑制夜間生長激素分泌；晚餐可維持適量優質蛋白質。</li>
+          <li><strong>微涼暗室環境</strong>：室溫維持 19～22°C 有助人體活化棕色脂肪 (BAT)，顯著提升夜間基礎熱量代謝與深睡比例。</li>
+        </ul>
+      </div>
+
+      <button type="button" id="save-sleep-record-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-xl text-xs transition">
+        儲存當日睡眠燃脂紀錄
+      </button>
+    </div>
     <div id="schedule-modal" class="hidden bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 space-y-4 shadow-2xl">
       <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
         <div class="flex items-center gap-2">
@@ -467,10 +571,13 @@
         </div>
 
         <!-- Exercise Burned -->
-        <div class="bg-slate-950/70 border border-slate-800/90 rounded-xl p-3 text-center">
-          <span class="text-[11px] text-slate-400 block mb-0.5"><i class="fa-solid fa-fire text-emerald-400 mr-1"></i>運動燃脂消耗</span>
+        <div class="bg-slate-950/70 border border-slate-800/90 rounded-xl p-3 text-center cursor-pointer hover:border-emerald-500/40 transition group" id="open-exercise-from-card" title="點擊展開運動紀錄">
+          <div class="flex items-center justify-center gap-1 mb-0.5">
+            <span class="text-[11px] text-slate-400"><i class="fa-solid fa-fire text-emerald-400 mr-1"></i>運動燃脂消耗</span>
+            <i class="fa-solid fa-chevron-right text-[10px] text-emerald-400 opacity-60 group-hover:translate-x-0.5 transition"></i>
+          </div>
           <div class="text-xl font-extrabold text-emerald-400 font-mono" id="total-burned">0</div>
-          <span class="text-[10px] text-slate-500" id="total-duration">0 分鐘</span>
+          <span class="text-[10px] text-slate-500 group-hover:text-emerald-300 transition" id="total-duration">0 分鐘 (點擊展開)</span>
         </div>
 
         <!-- Food Intake -->
@@ -484,10 +591,381 @@
         </div>
 
         <!-- Net Deficit / Surplus -->
-        <div class="bg-slate-950/70 border border-slate-800/90 rounded-xl p-3 text-center">
-          <span class="text-[11px] text-slate-400 block mb-0.5"><i class="fa-solid fa-scale-balanced text-teal-400 mr-1"></i>今日熱量赤字</span>
+        <div class="bg-slate-950/70 border border-teal-500/30 rounded-xl p-3 text-center relative overflow-hidden">
+          <span class="text-[11px] text-teal-300 block mb-0.5"><i class="fa-solid fa-fire-glow text-teal-400 mr-1"></i>今日熱量赤字</span>
           <div class="text-xl font-extrabold font-mono text-teal-300" id="net-deficit-display">0</div>
-          <span class="text-[10px] text-slate-500" id="net-deficit-status">平衡狀態</span>
+          <div class="flex items-center justify-center gap-1 mt-0.5">
+            <span class="text-[10px] font-mono font-bold text-emerald-400" id="net-fat-burned-grams">≈ 0.0 g 脂肪</span>
+          </div>
+          <span class="text-[10px] text-slate-400 block mt-0.5" id="net-deficit-status">平衡狀態</span>
+        </div>
+      </div>
+
+      <!-- Caloric Deficit & Scientific Fat Burn Analysis Panel -->
+      <div class="bg-slate-950/80 border border-teal-500/30 rounded-xl p-3.5 space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between text-xs gap-2 border-b border-slate-800/80 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-md bg-teal-500/20 text-teal-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-fire-flame-curved"></i>
+            </span>
+            <span class="font-bold text-white">熱量赤字與真實燃脂換算</span>
+            <span class="text-[10px] text-slate-400 font-mono">1kg 體脂肪 $\approx$ 7,700 kcal 赤字</span>
+          </div>
+          <span id="deficit-zone-badge" class="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-slate-800 text-slate-400 border border-slate-700">
+            代謝維持中
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
+          <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 block mb-0.5">今日預估純脂肪燃燒</span>
+            <span id="banner-fat-grams" class="text-base font-extrabold text-emerald-400 font-mono">0.0 g</span>
+            <span class="text-[9px] text-slate-500 block">$\text{赤字} \div 7.7$</span>
+          </div>
+          <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 block mb-0.5">運動燃脂貢獻佔比</span>
+            <span id="banner-exercise-contribution" class="text-base font-extrabold text-cyan-400 font-mono">0%</span>
+            <span class="text-[9px] text-slate-500 block" id="banner-exercise-subtext">0 kcal 來自運動</span>
+          </div>
+          <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 block mb-0.5">每週減脂速度推估</span>
+            <span id="banner-weekly-pace" class="text-base font-extrabold text-teal-300 font-mono">0.00 kg/週</span>
+            <span class="text-[9px] text-slate-500 block">依當前赤字步調</span>
+          </div>
+        </div>
+
+        <p id="deficit-advice-tip" class="text-[11px] text-slate-300 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/70 leading-relaxed">
+          💡 <strong>科學減脂建議</strong>：理想的熱量赤字為每日 <strong>300～500 kcal</strong>，相當於每週減脂約 0.3～0.5 公斤，能最大程度燃燒脂肪並保護肌肉。
+        </p>
+      </div>
+
+      <!-- Daily Caloric Deficit & Cumulative Fat Loss Trend Chart Card -->
+      <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-chart-line"></i>
+            </span>
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                每日熱量赤字與累計燃脂趨勢
+                <span class="text-[10px] text-teal-400 font-mono font-normal bg-teal-950/60 border border-teal-500/30 px-2 py-0.5 rounded-full">雙軸趨勢</span>
+              </h3>
+              <p class="text-[11px] text-slate-400">長條圖代表每日淨赤字，折線代表區間累計燃脂赤字進度</p>
+            </div>
+          </div>
+
+          <!-- Time Range Selector Chips -->
+          <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-1 text-xs gap-1">
+            <button type="button" class="trend-range-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 transition" data-days="7">
+              近 7 天
+            </button>
+            <button type="button" class="trend-range-btn px-2.5 py-1 rounded-lg text-xs text-slate-400 hover:text-white border border-transparent transition" data-days="14">
+              近 14 天
+            </button>
+            <button type="button" class="trend-range-btn px-2.5 py-1 rounded-lg text-xs text-slate-400 hover:text-white border border-transparent transition" data-days="30">
+              近 30 天
+            </button>
+          </div>
+        </div>
+
+        <!-- 3 Trend Key Stat Badges -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-center text-xs">
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 block mb-0.5">區間累計總熱量赤字</span>
+            <span id="trend-total-deficit" class="text-base font-extrabold text-teal-300 font-mono">0 kcal</span>
+            <span class="text-[9px] text-slate-500 block" id="trend-days-subtext">近 7 天合計</span>
+          </div>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 block mb-0.5">累計換算純脂肪消耗</span>
+            <span id="trend-total-fat-burn" class="text-base font-extrabold text-emerald-400 font-mono">0.0 g (0.00 kg)</span>
+            <span class="text-[9px] text-slate-500 block">每 7.7 kcal 赤字 = 1g 脂肪</span>
+          </div>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 block mb-0.5">區間平均每日赤字</span>
+            <span id="trend-avg-deficit" class="text-base font-extrabold text-cyan-400 font-mono">0 kcal/天</span>
+            <span class="text-[9px] text-slate-500 block" id="trend-compliance-badge">目標達成率 0%</span>
+          </div>
+        </div>
+
+        <!-- Interactive SVG Chart Container -->
+        <div class="relative bg-slate-900/70 border border-slate-800/80 rounded-xl p-3 sm:p-4 overflow-hidden">
+          <div id="chart-tooltip-hover" class="hidden absolute z-20 pointer-events-none bg-slate-950/95 border border-teal-500/40 shadow-2xl rounded-xl p-2.5 text-xs text-slate-200 transition-all duration-150">
+            <!-- Tooltip dynamic content -->
+          </div>
+
+          <div class="w-full overflow-x-auto">
+            <svg id="deficit-trend-svg" class="w-full min-w-[500px] h-[220px]" viewBox="0 0 600 220" preserveAspectRatio="none">
+              <!-- Grid lines, bars, cumulative path rendered via JS -->
+            </svg>
+          </div>
+
+          <!-- Chart Legend & Controls -->
+          <div class="flex flex-wrap items-center justify-between pt-2.5 border-t border-slate-800/80 text-[11px] text-slate-400 gap-2">
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-sm bg-emerald-400 inline-block"></span>
+                <span>每日熱量赤字 (kcal)</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-1 bg-cyan-400 rounded-full inline-block"></span>
+                <span>累計赤字曲線 (kcal)</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-0.5 border-b-2 border-dashed border-amber-400 inline-block"></span>
+                <span>目標赤字線 (500 kcal)</span>
+              </span>
+            </div>
+            <div class="text-[10px] text-slate-500">
+              💡 游標懸停或點擊柱狀圖可檢視該日熱量明細
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Abs Body Fat Countdown & Milestones Card (Collapsible Drawer like Weekly Schedule) -->
+      <div id="abs-milestones-modal" class="hidden bg-gradient-to-br from-slate-900 via-slate-950 to-emerald-950/40 border border-emerald-500/30 rounded-2xl p-4 sm:p-5 space-y-4 shadow-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-trophy"></i>
+            </span>
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                腹肌目標體脂倒數里程碑
+                <span class="text-[10px] text-emerald-400 bg-emerald-950/70 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono">
+                  從 <strong id="milestone-current-bf-label">23%</strong> $\rightarrow$ <strong id="milestone-target-bf-label">15%</strong>
+                </span>
+              </h3>
+              <p class="text-[11px] text-slate-400">依據淨瘦體重（LBM）科學推估各階段腹肌顯現期程與剩餘倒數</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <!-- Quick Target Toggle Buttons -->
+            <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-1 text-xs gap-1">
+              <span class="text-[10px] text-slate-400 px-1">目標切換：</span>
+              <button type="button" class="abs-target-toggle px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40" data-target="15">
+                15% 初現
+              </button>
+              <button type="button" class="abs-target-toggle px-2 py-0.5 rounded-md text-[11px] text-slate-400 hover:text-white border border-transparent" data-target="12">
+                12% 刻線
+              </button>
+              <button type="button" class="abs-target-toggle px-2 py-0.5 rounded-md text-[11px] text-slate-400 hover:text-white border border-transparent" data-target="10">
+                10% 極致
+              </button>
+            </div>
+            <button id="close-milestones-btn" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-700">
+              <i class="fa-solid fa-xmark mr-1"></i>收起里程碑
+            </button>
+          </div>
+        </div>
+
+        <!-- Next Milestone Active Highlight Banner -->
+        <div class="bg-slate-900/90 border border-teal-500/40 rounded-xl p-3.5 space-y-2.5 relative overflow-hidden">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] font-bold">
+                🎯 當前衝刺目標
+              </span>
+              <span id="active-milestone-title" class="font-bold text-white text-xs sm:text-sm">
+                里程碑 3：腹肌初現 (體脂 15%)
+              </span>
+            </div>
+            <div class="text-right">
+              <span class="text-[11px] text-slate-400">倒數剩餘：</span>
+              <strong id="active-milestone-days-left" class="text-emerald-400 font-mono text-base font-extrabold">64 天</strong>
+              <span class="text-[10px] text-slate-500" id="active-milestone-weeks-left">(9.1 週)</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+            <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">目標體重推估</span>
+              <span id="active-target-weight-val" class="font-bold text-teal-300 font-mono">67.9 kg</span>
+            </div>
+            <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">尚需燃燒純脂肪</span>
+              <span id="active-fat-to-burn-val" class="font-bold text-emerald-400 font-mono">7.1 kg</span>
+            </div>
+            <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">尚需總熱量赤字</span>
+              <span id="active-deficit-needed-val" class="font-bold text-amber-300 font-mono">54,360 kcal</span>
+            </div>
+            <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">預計達標日期</span>
+              <span id="active-target-date-val" class="font-bold text-cyan-300 font-mono">2026/11/28</span>
+            </div>
+          </div>
+
+          <!-- Active Milestone Progress Bar -->
+          <div class="space-y-1 pt-1">
+            <div class="flex justify-between text-[11px] text-slate-400">
+              <span>達成進度：<span id="active-progress-text" class="text-white font-mono">0 / 54,360 kcal</span></span>
+              <span id="active-progress-percent" class="text-emerald-400 font-mono font-bold">0%</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+              <div id="active-progress-bar-fill" class="bg-gradient-to-r from-teal-500 via-emerald-400 to-cyan-400 h-2 rounded-full transition-all duration-500 w-0"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Milestone Stage Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5" id="milestones-stages-container">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+        <div class="text-[11px] text-slate-400 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/80 flex items-start gap-2">
+          <i class="fa-solid fa-lightbulb text-amber-400 mt-0.5 shrink-0"></i>
+          <div>
+            <strong>腹肌顯現科學定律</strong>：脂肪無法「局部燃燒」，仰賴全身熱量赤字穩定代謝。男性體脂在 <strong>15%</strong> 上下四至六塊腹肌分明；降至 <strong>12%</strong> 腹直肌橫紋與人字線清晰深刻。配合每週 2～3 次核心抗阻（如繩索捲腹、懸垂舉腿）能大幅增加腹肌塊狀飽滿度！
+          </div>
+        </div>
+      </div>
+
+      <!-- Abs Specialized Workout Guide Card (Collapsible Drawer like Weekly Schedule) -->
+      <div id="abs-guide-modal" class="hidden bg-slate-900 border border-teal-500/30 rounded-2xl p-4 sm:p-5 space-y-4 shadow-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-fire text-teal-400"></i>
+            </span>
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                腹肌專項王牌動作深度解析
+                <span class="text-[10px] text-teal-300 bg-teal-950/70 border border-teal-500/40 px-2 py-0.5 rounded-full font-mono">3D 立體塊狀肌</span>
+              </h3>
+              <p class="text-[11px] text-slate-400">精準掌握「骨盆後傾」與「脊椎主動屈曲」，拒絕髖屈肌借力與無效假動作</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] text-slate-400 font-mono bg-slate-950 px-2 py-1 rounded border border-slate-800 hidden sm:inline-block">每週 2～3 次 · 每次 10-15 分鐘</span>
+            <button id="close-abs-guide-btn" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-700">
+              <i class="fa-solid fa-xmark mr-1"></i>收起解析
+            </button>
+          </div>
+        </div>
+
+        <!-- 2 Major Core Exercises Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <!-- Movement 1: Hanging Leg Raise -->
+          <div class="bg-slate-950/80 border border-emerald-500/30 rounded-xl p-4 space-y-3 flex flex-col justify-between hover:border-emerald-500/60 transition">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-md bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">1</span>
+                  <h4 class="text-sm font-bold text-white">懸垂舉腿 (Hanging Leg Raise)</h4>
+                </div>
+                <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">下腹王牌</span>
+              </div>
+
+              <!-- Target Muscles & Principle -->
+              <div class="text-[11px] space-y-1.5 text-slate-300 leading-relaxed">
+                <div class="flex items-center gap-1.5 text-emerald-400 font-medium">
+                  <i class="fa-solid fa-crosshairs text-[10px]"></i>
+                  <span>主攻肌群：腹直肌下段、腹外斜肌下沿、腹橫肌深層抗伸展</span>
+                </div>
+                <p class="text-slate-400 text-[11px]">
+                  <strong>生物力學關鍵</strong>：腹肌沒有跨過髖關節，若只把大腿往上抬，主要出力的是<strong>大腿根部髂腰肌</strong>。唯有<strong>骨盆向上捲動（骨盆後傾）</strong>，腹肌才會真正向心收縮！
+                </p>
+              </div>
+
+              <!-- Cue & Common Mistakes -->
+              <div class="bg-slate-900/90 rounded-lg p-2.5 space-y-1.5 text-[11px] border border-slate-800">
+                <div class="text-emerald-300 font-semibold flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-[10px]"></i>
+                  <span>黃金發力口訣 (Cue)：</span>
+                </div>
+                <p class="text-slate-200">
+                  「<strong>尾椎朝胸口捲起</strong>」——想像肚臍下方的恥骨向肋骨靠攏。懸掛時先沉肩微收肩胛，起腿時呼氣、頂峰收縮停頓 1 秒，下落緩慢控制 2 秒不借力晃動。
+                </p>
+
+                <div class="text-rose-400 font-semibold flex items-center gap-1 pt-1 border-t border-slate-800/80">
+                  <i class="fa-solid fa-triangle-exclamation text-[10px]"></i>
+                  <span>常見代償錯誤：</span>
+                </div>
+                <p class="text-slate-400">
+                  身體像鐘擺劇烈晃動、腰部過度拱起、只抬大腿但骨盆毫無捲起動作（髂腰肌疲勞但腹肌沒感覺）。
+                </p>
+              </div>
+
+              <!-- Progression Levels -->
+              <div class="text-[10px] bg-slate-900/60 p-2 rounded-lg border border-slate-800 space-y-1 text-slate-300 font-mono">
+                <div class="font-bold text-slate-200">🚀 漸進進階階梯：</div>
+                <div>L1 屈膝舉腿 (12-15次) $\rightarrow$ L2 直腿舉腿 (8-12次) $\rightarrow$ L3 腳尖觸槓 Toes-to-Bar</div>
+              </div>
+            </div>
+
+            <!-- Preload Button -->
+            <button type="button" onclick="loadAbsExercise('legraise')" class="w-full bg-emerald-600/90 hover:bg-emerald-500 text-white font-bold py-2 rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-md">
+              <i class="fa-solid fa-arrow-down-long"></i> 一鍵帶入「懸垂舉腿」至今日紀錄
+            </button>
+          </div>
+
+          <!-- Movement 2: Cable Crunch -->
+          <div class="bg-slate-950/80 border border-teal-500/30 rounded-xl p-4 space-y-3 flex flex-col justify-between hover:border-teal-500/60 transition">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-md bg-teal-500/20 text-teal-400 flex items-center justify-center text-xs font-bold font-mono">2</span>
+                  <h4 class="text-sm font-bold text-white">繩索跪姿捲腹 (Cable Crunch)</h4>
+                </div>
+                <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-teal-500/10 text-teal-300 border border-teal-500/30">塊狀厚度首選</span>
+              </div>
+
+              <!-- Target Muscles & Principle -->
+              <div class="text-[11px] space-y-1.5 text-slate-300 leading-relaxed">
+                <div class="flex items-center gap-1.5 text-teal-400 font-medium">
+                  <i class="fa-solid fa-crosshairs text-[10px]"></i>
+                  <span>主攻肌群：腹直肌上中段、腱劃分明度、負重肥大生長</span>
+                </div>
+                <p class="text-slate-400 text-[11px]">
+                  <strong>生物力學關鍵</strong>：腹肌是骨骼肌，徒手訓練很快達到適應瓶頸。繩索捲腹提供<strong>全程恆定張力與負重超負荷能力</strong>，是讓腹肌塊狀突顯厚度（非扁平）的第一動作！
+                </p>
+              </div>
+
+              <!-- Cue & Common Mistakes -->
+              <div class="bg-slate-900/90 rounded-lg p-2.5 space-y-1.5 text-[11px] border border-slate-800">
+                <div class="text-teal-300 font-semibold flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-[10px]"></i>
+                  <span>黃金發力口訣 (Cue)：</span>
+                </div>
+                <p class="text-slate-200">
+                  「<strong>髖部打樁鎖死，胸骨主動折疊向恥骨</strong>」——雙手繩索固定在耳朵旁不要移動，臀部始終保持在大腿上方。像蝦子一樣屈曲脊椎捲向地面，最底端徹底吐盡空氣、極致收縮 1.5 秒。
+                </p>
+
+                <div class="text-rose-400 font-semibold flex items-center gap-1 pt-1 border-t border-slate-800/80">
+                  <i class="fa-solid fa-triangle-exclamation text-[10px]"></i>
+                  <span>常見代償錯誤：</span>
+                </div>
+                <p class="text-slate-400">
+                  屁股往後坐到腳跟變成「跪拜動作」（完全靠自身重量下壓，腹肌沒收縮）、雙手死命拉繩索用二頭肌與背部代償。
+                </p>
+              </div>
+
+              <!-- Progression Levels -->
+              <div class="text-[10px] bg-slate-900/60 p-2 rounded-lg border border-slate-800 space-y-1 text-slate-300 font-mono">
+                <div class="font-bold text-slate-200">🎯 推薦訓練處方：</div>
+                <div>每週 2 次 · 4 組 × 12～15 次 · 慢速離心放回 2 秒 · 負重循序漸進</div>
+              </div>
+            </div>
+
+            <!-- Preload Button -->
+            <button type="button" onclick="loadAbsExercise('cable-crunch')" class="w-full bg-teal-600/90 hover:bg-teal-500 text-white font-bold py-2 rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-md">
+              <i class="fa-solid fa-arrow-down-long"></i> 一鍵帶入「繩索捲腹」至今日紀錄
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Practical Periodization Tips -->
+        <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/90 flex items-start gap-2.5 text-xs text-slate-300 leading-relaxed">
+          <span class="text-amber-400 text-sm mt-0.5"><i class="fa-solid fa-clipboard-check"></i></span>
+          <div>
+            <strong>腹肌增肌與減脂排程建議</strong>：
+            腹肌屬於耐勞肌群，但仍需 48 小時超量恢復。建議安排在<strong>重訓課表結尾執行 8～12 分鐘</strong>（例如週一搭配「懸垂舉腿 3組」、週四搭配「繩索捲腹 4組」）。在維持每日 300～500 kcal 熱量赤字消脂的同時，厚實飽滿的腹直肌塊將在體脂降至 15% 時第一時間脫穎而出！
+          </div>
         </div>
       </div>
 
@@ -910,15 +1388,28 @@
       </div>
     </div>
 
-    <!-- Exercise Logging Form -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-sm">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h2 class="text-base font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-dumbbell text-emerald-400"></i> 新增運動紀錄
-        </h2>
-        <div class="flex gap-1 text-xs">
-          <button id="tab-preset" class="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/40">常用清單</button>
-          <button id="tab-custom" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent">自訂動作</button>
+    <!-- Exercise Logging Form (Collapsible Drawer like Weekly Schedule) -->
+    <div id="exercise-modal" class="hidden bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 space-y-4 shadow-2xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-dumbbell"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              新增運動紀錄
+            </h2>
+            <p class="text-[11px] text-slate-400">精準計算重訓組數容量或有氧時長，即時納入燃脂消耗</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <div class="flex gap-1 text-xs">
+            <button id="tab-preset" class="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/40">常用清單</button>
+            <button id="tab-custom" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent">自訂動作</button>
+          </div>
+          <button id="close-exercise-btn" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-700">
+            <i class="fa-solid fa-xmark mr-1"></i>收起紀錄
+          </button>
         </div>
       </div>
 
@@ -986,6 +1477,7 @@
             <!-- Core & Abs -->
             <optgroup label="⚡ 核心與腹肌訓練 (Core & Abs)" data-group="core">
               <option value="plank" data-met="5.0" data-type="core" data-group="core">棒式 / 側棒式 (Plank) - MET 5.0</option>
+              <option value="cable-crunch" data-met="6.0" data-type="strength" data-group="core">繩索跪姿捲腹 (Cable Crunch) - MET 6.0</option>
               <option value="legraise" data-met="6.5" data-type="core" data-group="core">懸垂舉腿 (Hanging Leg Raise) - MET 6.5</option>
               <option value="abwheel" data-met="6.5" data-type="core" data-group="core">健腹輪推進 (Ab Wheel) - MET 6.5</option>
               <option value="crunch" data-met="5.0" data-type="core" data-group="core">捲腹 / 負重捲腹 (Crunches) - MET 5.0</option>
@@ -1138,8 +1630,9 @@
 
       <!-- Real-time Preview & Add Button -->
       <div class="flex items-center justify-between pt-3 border-t border-slate-800">
-        <div class="text-xs text-slate-400">
-          預估消耗：<span id="preview-burn" class="text-emerald-400 font-bold text-base">0</span> kcal
+        <div class="text-xs text-slate-400 flex items-center flex-wrap gap-1.5">
+          <span>預估消耗：<strong id="preview-burn" class="text-emerald-400 font-bold text-base font-mono">0</strong> kcal</span>
+          <span id="preview-fat-burn" class="text-[10px] text-teal-300 font-mono bg-teal-950/60 border border-teal-500/30 px-1.5 py-0.5 rounded">燃脂約 0.0g</span>
         </div>
         <button id="add-exercise-btn" class="bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-1.5">
           <i class="fa-solid fa-plus"></i> 加入紀錄
@@ -1155,16 +1648,25 @@
           <span id="history-date-header">當日運動清單</span>
           <span id="item-count-badge" class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded-full font-normal">0 項</span>
         </h2>
-        <button id="clear-all-btn" class="text-xs text-rose-400 hover:text-rose-300 hover:underline">
-          清空該日
-        </button>
+        <div class="flex items-center gap-2">
+          <button id="open-exercise-from-history" class="text-xs text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 font-semibold">
+            <i class="fa-solid fa-plus text-[10px]"></i>展開新增動作
+          </button>
+          <span class="text-slate-700">|</span>
+          <button id="clear-all-btn" class="text-xs text-rose-400 hover:text-rose-300 hover:underline">
+            清空該日
+          </button>
+        </div>
       </div>
 
       <div id="exercise-list" class="space-y-2.5"></div>
 
       <div id="empty-state" class="py-8 text-center text-slate-500 space-y-2">
         <i class="fa-solid fa-person-running text-3xl opacity-40"></i>
-        <p class="text-sm">該日尚未安排運動動作，立即在上方加入訓練吧！</p>
+        <p class="text-sm">該日尚未安排運動動作</p>
+        <button type="button" id="open-exercise-from-empty" class="mt-1 px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/40 text-xs font-semibold inline-flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-plus"></i> 點此展開新增運動紀錄
+        </button>
       </div>
     </div>
 
@@ -1204,6 +1706,7 @@
 
     let allRecords = {};
     let foodRecords = {};
+    let sleepRecords = {};
     let selectedDate = formatDateKey(new Date());
     let calDisplayYear = new Date().getFullYear();
     let calDisplayMonth = new Date().getMonth();
@@ -1282,6 +1785,20 @@
     const closeFoodBtn = document.getElementById('close-food-btn');
     const openFoodFromCard = document.getElementById('open-food-from-card');
 
+    const toggleSleepBtn = document.getElementById('toggle-sleep-btn');
+    const toggleSleepText = document.getElementById('toggle-sleep-text');
+    const sleepModal = document.getElementById('sleep-modal');
+    const closeSleepBtn = document.getElementById('close-sleep-btn');
+    const inputSleepHours = document.getElementById('input-sleep-hours');
+    const sleepQualitySelector = document.getElementById('sleep-quality-selector');
+    const sleepBurnKcal = document.getElementById('sleep-burn-kcal');
+    const sleepGhLevel = document.getElementById('sleep-gh-level');
+    const sleepCortisolStatus = document.getElementById('sleep-cortisol-status');
+    const sleepLeptinStatus = document.getElementById('sleep-leptin-status');
+    const saveSleepRecordBtn = document.getElementById('save-sleep-record-btn');
+
+    let currentSleepQuality = 'great';
+
     const badgeFoodTotal = document.getElementById('badge-food-total');
     const foodMealType = document.getElementById('food-meal-type');
     const foodNameInput = document.getElementById('food-name');
@@ -1357,6 +1874,78 @@
     const itemCountBadge = document.getElementById('item-count-badge');
     const clearAllBtn = document.getElementById('clear-all-btn');
 
+    const toggleExerciseBtn = document.getElementById('toggle-exercise-btn');
+    const toggleExerciseText = document.getElementById('toggle-exercise-text');
+    const exerciseModal = document.getElementById('exercise-modal');
+    const closeExerciseBtn = document.getElementById('close-exercise-btn');
+    const openExerciseFromCard = document.getElementById('open-exercise-from-card');
+    const openExerciseFromHistory = document.getElementById('open-exercise-from-history');
+    const openExerciseFromEmpty = document.getElementById('open-exercise-from-empty');
+
+    function toggleExerciseDrawer(forceOpen = null) {
+      if (!exerciseModal) return;
+      const shouldOpen = forceOpen !== null ? forceOpen : exerciseModal.classList.contains('hidden');
+      if (shouldOpen) {
+        exerciseModal.classList.remove('hidden');
+        if (toggleExerciseText) toggleExerciseText.textContent = '收起運動紀錄';
+        exerciseModal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        exerciseModal.classList.add('hidden');
+        if (toggleExerciseText) toggleExerciseText.textContent = '新增運動紀錄';
+      }
+    }
+
+    if (toggleExerciseBtn) toggleExerciseBtn.addEventListener('click', () => toggleExerciseDrawer());
+    if (closeExerciseBtn) closeExerciseBtn.addEventListener('click', () => toggleExerciseDrawer(false));
+    if (openExerciseFromCard) openExerciseFromCard.addEventListener('click', () => toggleExerciseDrawer(true));
+    if (openExerciseFromHistory) openExerciseFromHistory.addEventListener('click', () => toggleExerciseDrawer(true));
+    if (openExerciseFromEmpty) openExerciseFromEmpty.addEventListener('click', () => toggleExerciseDrawer(true));
+
+    const toggleMilestonesBtn = document.getElementById('toggle-milestones-btn');
+    const toggleMilestonesText = document.getElementById('toggle-milestones-text');
+    const absMilestonesModal = document.getElementById('abs-milestones-modal');
+    const closeMilestonesBtn = document.getElementById('close-milestones-btn');
+
+    const toggleAbsGuideBtn = document.getElementById('toggle-abs-guide-btn');
+    const toggleAbsGuideText = document.getElementById('toggle-abs-guide-text');
+    const absGuideModal = document.getElementById('abs-guide-modal');
+    const closeAbsGuideBtn = document.getElementById('close-abs-guide-btn');
+
+    function toggleMilestonesDrawer(forceOpen = null) {
+      if (!absMilestonesModal) return;
+      const shouldOpen = forceOpen !== null ? forceOpen : absMilestonesModal.classList.contains('hidden');
+      if (shouldOpen) {
+        absMilestonesModal.classList.remove('hidden');
+        if (toggleMilestonesText) toggleMilestonesText.textContent = '收起目標里程碑';
+        absMilestonesModal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        absMilestonesModal.classList.add('hidden');
+        if (toggleMilestonesText) toggleMilestonesText.textContent = '腹肌目標里程碑';
+      }
+    }
+
+    function toggleAbsGuideDrawer(forceOpen = null) {
+      if (!absGuideModal) return;
+      const shouldOpen = forceOpen !== null ? forceOpen : absGuideModal.classList.contains('hidden');
+      if (shouldOpen) {
+        absGuideModal.classList.remove('hidden');
+        if (toggleAbsGuideText) toggleAbsGuideText.textContent = '收起動作解析';
+        absGuideModal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        absGuideModal.classList.add('hidden');
+        if (toggleAbsGuideText) toggleAbsGuideText.textContent = '腹肌動作解析';
+      }
+    }
+
+    window.toggleMilestonesDrawer = toggleMilestonesDrawer;
+    window.toggleAbsGuideDrawer = toggleAbsGuideDrawer;
+
+    if (toggleMilestonesBtn) toggleMilestonesBtn.addEventListener('click', () => toggleMilestonesDrawer());
+    if (closeMilestonesBtn) closeMilestonesBtn.addEventListener('click', () => toggleMilestonesDrawer(false));
+
+    if (toggleAbsGuideBtn) toggleAbsGuideBtn.addEventListener('click', () => toggleAbsGuideDrawer());
+    if (closeAbsGuideBtn) closeAbsGuideBtn.addEventListener('click', () => toggleAbsGuideDrawer(false));
+
     function updateGoalCalculations() {
       const w = parseFloat(inputWeight.value) || profile.weight;
       const h = parseFloat(inputHeight.value) || profile.height;
@@ -1424,7 +2013,227 @@
       }
 
       resPlanTip.innerHTML = `💡 每日創造 <strong>${totalDailyDeficit} kcal</strong> 熱量赤字 (例如飲食控制攝取約 <strong>${targetIntake.toLocaleString()} kcal</strong> + 運動消耗 <strong>${dailyBurnInput} kcal</strong>)，預計 <strong>${remainingDays} 天</strong> (${(remainingDays / 7).toFixed(1)} 週) 達成體脂 <strong>${targetBf}%</strong> (約 ${targetW} kg)！`;
+      renderAbsMilestones();
     }
+
+    function renderAbsMilestones() {
+      const container = document.getElementById('milestones-stages-container');
+      if (!container) return;
+
+      const currentBfLabel = document.getElementById('milestone-current-bf-label');
+      const targetBfLabel = document.getElementById('milestone-target-bf-label');
+      const activeTitle = document.getElementById('active-milestone-title');
+      const activeDaysLeft = document.getElementById('active-milestone-days-left');
+      const activeWeeksLeft = document.getElementById('active-milestone-weeks-left');
+      const activeTargetW = document.getElementById('active-target-weight-val');
+      const activeFatToBurn = document.getElementById('active-fat-to-burn-val');
+      const activeDeficitNeeded = document.getElementById('active-deficit-needed-val');
+      const activeTargetDate = document.getElementById('active-target-date-val');
+      const activeProgressText = document.getElementById('active-progress-text');
+      const activeProgressPercent = document.getElementById('active-progress-percent');
+      const activeProgressBarFill = document.getElementById('active-progress-bar-fill');
+
+      const w = parseFloat(inputWeight ? inputWeight.value : profile.weight) || profile.weight;
+      const currentBf = parseFloat(inputBodyFat ? inputBodyFat.value : profile.bodyFat) || 23;
+      const targetBf = parseFloat(inputTargetBodyFat ? inputTargetBodyFat.value : profile.targetBodyFat) || 15;
+
+      if (currentBfLabel) currentBfLabel.textContent = `${currentBf}%`;
+      if (targetBfLabel) targetBfLabel.textContent = `${targetBf}%`;
+
+      // Lean Body Mass (LBM)
+      const lbm = w * (1 - currentBf / 100);
+
+      // Compute total accumulated deficit from all days
+      let totalAccumulatedDeficit = 0;
+      Object.keys(allRecords).forEach(k => {
+        if (Array.isArray(allRecords[k])) {
+          totalAccumulatedDeficit += allRecords[k].reduce((s, it) => s + (it.calories || 0), 0);
+        }
+      });
+
+      const dailyBurn = parseFloat(inputGoal ? inputGoal.value : 600) || 600;
+      const dailyDeficitPace = dailyBurn + 250; // daily burn + diet deficit 250 kcal
+
+      const stages = [
+        {
+          id: 1,
+          name: '階段一：消腫收腹',
+          bf: 20,
+          desc: '腹部微縮、水腫消除，腹壁肌肉張力明顯提升',
+          badge: '初步改變',
+          color: 'teal'
+        },
+        {
+          id: 2,
+          name: '階段二：平坦顯廓',
+          bf: 17,
+          desc: '站立無贅肉，小腹緊實平坦，上腹兩塊初露端倪',
+          badge: '平坦身形',
+          color: 'cyan'
+        },
+        {
+          id: 3,
+          name: '階段三：腹肌初現',
+          bf: 15,
+          desc: '四至六塊腹肌分明，核心線條深邃有型（經典達標）',
+          badge: '🎯 核心目標',
+          color: 'emerald'
+        },
+        {
+          id: 4,
+          name: '階段四：極致雕刻',
+          bf: 12,
+          desc: '腹外斜肌（鯊魚線）與下腹人字線清晰，血管隱見',
+          badge: '⚡ 雕刻線條',
+          color: 'indigo'
+        }
+      ];
+
+      let activeFound = null;
+      let stagesHTML = '';
+
+      stages.forEach(st => {
+        const stageTargetWeight = +(lbm / (1 - st.bf / 100)).toFixed(1);
+        const fatLossKg = Math.max(0, +(w - stageTargetWeight).toFixed(1));
+        const totalDeficitNeeded = Math.round(fatLossKg * 7700);
+
+        const isAchieved = currentBf <= st.bf || (totalDeficitNeeded > 0 && totalAccumulatedDeficit >= totalDeficitNeeded);
+        const remDeficit = isAchieved ? 0 : Math.max(0, totalDeficitNeeded - totalAccumulatedDeficit);
+        const remDays = isAchieved ? 0 : Math.ceil(remDeficit / dailyDeficitPace);
+        const remWeeks = +(remDays / 7).toFixed(1);
+
+        const stageProgress = totalDeficitNeeded > 0
+          ? Math.min(100, Math.round((totalAccumulatedDeficit / totalDeficitNeeded) * 100))
+          : 100;
+
+        const isUserTarget = Math.abs(st.bf - targetBf) < 0.5;
+
+        if (!activeFound && (!isAchieved || isUserTarget)) {
+          activeFound = { ...st, stageTargetWeight, fatLossKg, totalDeficitNeeded, remDeficit, remDays, remWeeks, stageProgress };
+        }
+
+        stagesHTML += `
+          <div class="bg-slate-900/80 border ${isUserTarget ? 'border-emerald-500/80 ring-1 ring-emerald-500/50' : 'border-slate-800'} rounded-xl p-3 flex flex-col justify-between space-y-2 hover:border-slate-700 transition cursor-pointer" onclick="setAbsTargetBodyFat(${st.bf})">
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="font-bold ${isUserTarget ? 'text-emerald-400' : 'text-white'}">${st.name}</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded font-mono ${isAchieved ? 'bg-emerald-500/20 text-emerald-400' : (isUserTarget ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-400')}">
+                  ${isAchieved ? '✓ 已達成' : (isUserTarget ? '目標' : `${st.bf}%`)}
+                </span>
+              </div>
+              <p class="text-[10px] text-slate-400 leading-tight mb-2">${st.desc}</p>
+              <div class="bg-slate-950/60 p-2 rounded-lg space-y-0.5 text-[11px] font-mono border border-slate-800/80">
+                <div class="flex justify-between text-slate-300">
+                  <span>推估體重：</span>
+                  <strong class="text-teal-300">${stageTargetWeight} kg</strong>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                  <span>需減脂肪：</span>
+                  <span class="text-white">${fatLossKg} kg</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                  <span>倒數天數：</span>
+                  <span class="${isAchieved ? 'text-emerald-400 font-bold' : 'text-amber-400'}">${isAchieved ? '已達成 🎉' : `${remDays} 天`}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress bar in card -->
+            <div class="pt-1">
+              <div class="flex justify-between text-[10px] text-slate-500 mb-0.5">
+                <span>進度</span>
+                <span>${stageProgress}%</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-1.5 rounded-full" style="width: ${stageProgress}%"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = stagesHTML;
+
+      // Update Active Milestone Banner
+      if (!activeFound) {
+        activeFound = {
+          name: `目標體脂 ${targetBf}%`,
+          bf: targetBf,
+          stageTargetWeight: +(lbm / (1 - targetBf / 100)).toFixed(1),
+          fatLossKg: Math.max(0, +(w - +(lbm / (1 - targetBf / 100))).toFixed(1)),
+          totalDeficitNeeded: Math.round(Math.max(0, +(w - +(lbm / (1 - targetBf / 100)))) * 7700),
+          remDeficit: 0,
+          remDays: 0,
+          remWeeks: 0,
+          stageProgress: 100
+        };
+      }
+
+      if (activeTitle) activeTitle.textContent = `${activeFound.name} (體脂 ${activeFound.bf}%)`;
+      if (activeDaysLeft) activeDaysLeft.textContent = activeFound.remDays === 0 ? '已達標 🎉' : `${activeFound.remDays} 天`;
+      if (activeWeeksLeft) activeWeeksLeft.textContent = activeFound.remDays === 0 ? '' : `(${activeFound.remWeeks} 週)`;
+      if (activeTargetW) activeTargetW.textContent = `${activeFound.stageTargetWeight} kg`;
+      if (activeFatToBurn) activeFatToBurn.textContent = `${activeFound.fatLossKg} kg`;
+      if (activeDeficitNeeded) activeDeficitNeeded.textContent = `${activeFound.totalDeficitNeeded.toLocaleString()} kcal`;
+
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() + activeFound.remDays);
+      const y = targetDate.getFullYear();
+      const m = String(targetDate.getMonth() + 1).padStart(2, '0');
+      const d = String(targetDate.getDate()).padStart(2, '0');
+      if (activeTargetDate) activeTargetDate.textContent = activeFound.remDays === 0 ? '恭喜達標！' : `${y}/${m}/${d}`;
+
+      if (activeProgressText) activeProgressText.textContent = `${totalAccumulatedDeficit.toLocaleString()} / ${activeFound.totalDeficitNeeded.toLocaleString()} kcal`;
+      if (activeProgressPercent) activeProgressPercent.textContent = `${activeFound.stageProgress}%`;
+      if (activeProgressBarFill) activeProgressBarFill.style.width = `${activeFound.stageProgress}%`;
+    }
+
+    window.setAbsTargetBodyFat = function(bfVal) {
+      if (inputTargetBodyFat) {
+        inputTargetBodyFat.value = bfVal;
+      }
+      profile.targetBodyFat = bfVal;
+      document.querySelectorAll('.abs-target-toggle').forEach(btn => {
+        if (parseFloat(btn.dataset.target) === bfVal) {
+          btn.className = 'abs-target-toggle px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        } else {
+          btn.className = 'abs-target-toggle px-2 py-0.5 rounded-md text-[11px] text-slate-400 hover:text-white border border-transparent';
+        }
+      });
+      updateGoalCalculations();
+    };
+
+    // Attach target toggle buttons
+    document.querySelectorAll('.abs-target-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = parseFloat(btn.dataset.target);
+        if (val) window.setAbsTargetBodyFat(val);
+      });
+    });
+
+    window.loadAbsExercise = function(type) {
+      setTab('preset');
+      setRecordMode('strength');
+      if (type === 'legraise') {
+        presetSelect.value = 'legraise';
+        inputSets.value = 3;
+        inputReps.value = 12;
+        inputLiftWeight.value = 0;
+        exerciseNotes.value = '專注骨盆後傾捲動，頂峰收縮1秒，拒絕大腿根部代償';
+      } else if (type === 'cable-crunch') {
+        presetSelect.value = 'cable-crunch';
+        inputSets.value = 4;
+        inputReps.value = 15;
+        inputLiftWeight.value = 40;
+        exerciseNotes.value = '髖關節鎖死不後坐，胸骨主動折疊向恥骨，離心慢放2秒';
+      }
+      autoEstimateDurationFromSets();
+      updatePreview();
+      const formEl = document.getElementById('preset-view');
+      if (formEl) {
+        formEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
 
     function calculateCalories(met, weightKg, durationMins) {
       if (!met || !weightKg || !durationMins) return 0;
@@ -1474,6 +2283,11 @@
       }
       const kcal = calculateCalories(met, profile.weight, duration);
       previewBurnEl.textContent = kcal;
+      const previewFatEl = document.getElementById('preview-fat-burn');
+      if (previewFatEl) {
+        const fatGrams = (kcal / 7.7).toFixed(1);
+        previewFatEl.textContent = `燃脂約 ${fatGrams}g 脂肪`;
+      }
     }
 
     function setTab(tab) {
@@ -1492,6 +2306,356 @@
       updatePreview();
     }
 
+    function updateDeficitFatBurn() {
+      const netDeficitText = netDeficitDisplay ? netDeficitDisplay.textContent.replace(/[^0-9.-]/g, '') : '0';
+      const netDeficit = parseFloat(netDeficitText) || 0;
+
+      const netFatGramsEl = document.getElementById('net-fat-burned-grams');
+      const bannerFatGrams = document.getElementById('banner-fat-grams');
+      const bannerExCont = document.getElementById('banner-exercise-contribution');
+      const bannerExSubtext = document.getElementById('banner-exercise-subtext');
+      const bannerWeeklyPace = document.getElementById('banner-weekly-pace');
+      const deficitZoneBadge = document.getElementById('deficit-zone-badge');
+      const deficitAdviceTip = document.getElementById('deficit-advice-tip');
+
+      // 1g body fat = 7.7 kcal (7,700 kcal per kg)
+      const fatGrams = +(Math.max(0, netDeficit) / 7.7).toFixed(1);
+      const weeklyPaceKg = +(Math.max(0, netDeficit) * 7 / 7700).toFixed(2);
+
+      if (netFatGramsEl) {
+        if (netDeficit > 0) {
+          netFatGramsEl.textContent = `≈ 燃燒 ${fatGrams} g 脂肪`;
+          netFatGramsEl.className = 'text-[10px] font-mono font-bold text-emerald-400';
+        } else if (netDeficit < 0) {
+          netFatGramsEl.textContent = `熱量盈餘 ${Math.abs(netDeficit)} kcal`;
+          netFatGramsEl.className = 'text-[10px] font-mono font-bold text-rose-400';
+        } else {
+          netFatGramsEl.textContent = '≈ 0.0 g 脂肪';
+          netFatGramsEl.className = 'text-[10px] font-mono text-slate-400';
+        }
+      }
+
+      if (bannerFatGrams) bannerFatGrams.textContent = `${fatGrams} g`;
+      if (bannerWeeklyPace) bannerWeeklyPace.textContent = `${weeklyPaceKg} kg/週`;
+
+      const curExercises = getCurrentExercises();
+      const exBurned = curExercises.reduce((s, it) => s + (it.calories || 0), 0);
+
+      if (bannerExCont) {
+        if (netDeficit > 0 && exBurned > 0) {
+          const pct = Math.min(100, Math.round((exBurned / Math.max(1, netDeficit)) * 100));
+          bannerExCont.textContent = `${pct}%`;
+        } else {
+          bannerExCont.textContent = exBurned > 0 ? '100%' : '0%';
+        }
+      }
+      if (bannerExSubtext) {
+        bannerExSubtext.textContent = `${exBurned} kcal 來自運動消耗`;
+      }
+
+      if (deficitZoneBadge && deficitAdviceTip) {
+        if (netDeficit <= 0) {
+          deficitZoneBadge.textContent = '熱量平衡 / 盈餘';
+          deficitZoneBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/40';
+          deficitAdviceTip.innerHTML = `💡 目前為<strong>熱量平衡或盈餘</strong>狀態。若目標為減脂顯現腹肌，可適度調整飲食卡路里或增加運動消耗，維持每日 300～500 kcal 赤字。`;
+        } else if (netDeficit < 300) {
+          deficitZoneBadge.textContent = '溫和輕度燃脂';
+          deficitZoneBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/40';
+          deficitAdviceTip.innerHTML = `🌱 <strong>溫和燃脂狀態</strong>：今日創造 <strong>${netDeficit} kcal</strong> 赤字，燃燒約 <strong>${fatGrams}g</strong> 脂肪。步調溫和穩定，無壓力不易疲憊。`;
+        } else if (netDeficit <= 600) {
+          deficitZoneBadge.textContent = '🔥 黃金高效燃脂';
+          deficitZoneBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40';
+          deficitAdviceTip.innerHTML = `🎯 <strong>黃金燃脂區間 (300～600 kcal)</strong>：今日赤字 <strong>${netDeficit} kcal</strong>，預估燃燒 <strong>${fatGrams}g</strong> 純脂肪！脂肪分解效率高且能穩固維持肌肉量。`;
+        } else if (netDeficit <= 900) {
+          deficitZoneBadge.textContent = '⚡ 積極高速減脂';
+          deficitZoneBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40';
+          deficitAdviceTip.innerHTML = `⚡ <strong>積極減脂狀態</strong>：今日赤字 <strong>${netDeficit} kcal</strong>，燃脂約 <strong>${fatGrams}g</strong>。請留意確保補充足量蛋白質與睡眠，預防肌肉流失。`;
+        } else {
+          deficitZoneBadge.textContent = '⚠️ 赤字過大注意';
+          deficitZoneBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-rose-500/20 text-rose-400 border border-rose-500/40';
+          deficitAdviceTip.innerHTML = `⚠️ <strong>熱量赤字過大 (${netDeficit} kcal)</strong>：單日赤字超過 900 kcal 易使皮質醇上升並引發代謝適應或肌肉分解，建議適度補充蛋白質與複合碳水。`;
+        }
+      }
+
+      renderDeficitTrendChart();
+    }
+
+    let trendSelectedDays = 7;
+
+    function renderDeficitTrendChart() {
+      const svg = document.getElementById('deficit-trend-svg');
+      if (!svg) return;
+
+      const totalDeficitEl = document.getElementById('trend-total-deficit');
+      const totalFatBurnEl = document.getElementById('trend-total-fat-burn');
+      const avgDeficitEl = document.getElementById('trend-avg-deficit');
+      const daysSubtextEl = document.getElementById('trend-days-subtext');
+      const complianceEl = document.getElementById('trend-compliance-badge');
+      const tooltip = document.getElementById('chart-tooltip-hover');
+
+      const bmr = getCalculatedBmr();
+      const refDate = parseDateKey(selectedDate);
+      const daysCount = trendSelectedDays;
+
+      const series = [];
+      let runningCumulative = 0;
+
+      for (let i = daysCount - 1; i >= 0; i--) {
+        const d = new Date(refDate);
+        d.setDate(d.getDate() - i);
+        const dateKey = formatDateKey(d);
+        const dayMonthLabel = `${d.getMonth() + 1}/${d.getDate()}`;
+
+        const exList = allRecords[dateKey] || [];
+        const exBurn = exList.reduce((s, it) => s + (it.calories || 0), 0);
+
+        const foodList = foodRecords[dateKey] || [];
+        const foodIn = foodList.reduce((s, it) => s + (it.calories || 0), 0);
+
+        let deficit = 0;
+        let hasFoodLog = foodList.length > 0;
+        if (hasFoodLog) {
+          deficit = (bmr + exBurn) - foodIn;
+        } else if (exBurn > 0) {
+          deficit = exBurn; // 僅記錄運動消耗時作為運動赤字基準
+        } else {
+          deficit = 0;
+        }
+
+        runningCumulative += deficit;
+        series.push({
+          dateKey,
+          label: dayMonthLabel,
+          dayOfWeek: ['日','一','二','三','四','五','六'][d.getDay()],
+          bmr,
+          exBurn,
+          foodIn,
+          hasFoodLog,
+          deficit,
+          cumulative: runningCumulative,
+          fatGrams: +(deficit / 7.7).toFixed(1),
+          cumFatGrams: +(runningCumulative / 7.7).toFixed(1),
+          isSelected: dateKey === selectedDate
+        });
+      }
+
+      const totalDeficit = series.reduce((acc, it) => acc + it.deficit, 0);
+      const totalFatGrams = +(Math.max(0, totalDeficit) / 7.7).toFixed(1);
+      const totalFatKg = +(totalFatGrams / 1000).toFixed(2);
+      const avgDeficit = Math.round(totalDeficit / daysCount);
+      const targetDailyDeficit = 500;
+      const complianceRate = Math.min(100, Math.round((Math.max(0, avgDeficit) / targetDailyDeficit) * 100));
+
+      if (totalDeficitEl) totalDeficitEl.textContent = `${totalDeficit > 0 ? '+' : ''}${totalDeficit.toLocaleString()} kcal`;
+      if (totalFatBurnEl) totalFatBurnEl.textContent = `${totalFatGrams} g (${totalFatKg} kg)`;
+      if (avgDeficitEl) avgDeficitEl.textContent = `${avgDeficit > 0 ? '+' : ''}${avgDeficit.toLocaleString()} kcal/天`;
+      if (daysSubtextEl) daysSubtextEl.textContent = `近 ${daysCount} 天累計`;
+      if (complianceEl) {
+        complianceEl.textContent = `達標率 ${complianceRate}% (目標 500 kcal/日)`;
+        complianceEl.className = complianceRate >= 80 ? 'text-[9px] text-emerald-400 block font-semibold' : 'text-[9px] text-amber-400 block';
+      }
+
+      // Render SVG
+      const svgW = 600;
+      const svgH = 220;
+      const padLeft = 45;
+      const padRight = 50;
+      const padTop = 25;
+      const padBottom = 35;
+      const plotW = svgW - padLeft - padRight;
+      const plotH = svgH - padTop - padBottom;
+
+      const maxDaily = Math.max(900, ...series.map(s => s.deficit));
+      const minDaily = Math.min(-200, ...series.map(s => s.deficit));
+      const maxCum = Math.max(1500, ...series.map(s => s.cumulative), 1);
+      const minCum = Math.min(0, ...series.map(s => s.cumulative));
+
+      const dailySpan = maxDaily - minDaily || 1;
+      const cumSpan = maxCum - minCum || 1;
+
+      const getYDaily = (val) => padTop + plotH - ((val - minDaily) / dailySpan) * plotH;
+      const getYCum = (val) => padTop + plotH - ((val - minCum) / cumSpan) * plotH;
+      const yZero = Math.min(padTop + plotH, Math.max(padTop, getYDaily(0)));
+
+      let svgHTML = `
+        <defs>
+          <linearGradient id="cumLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#2dd4bf" />
+            <stop offset="100%" stop-color="#06b6d4" />
+          </linearGradient>
+          <linearGradient id="cumAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.25" />
+            <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.0" />
+          </linearGradient>
+        </defs>
+      `;
+
+      // Horizontal grid lines
+      const gridLevels = [0, 300, 600];
+      gridLevels.forEach(lvl => {
+        const y = getYDaily(lvl);
+        if (y >= padTop && y <= padTop + plotH) {
+          svgHTML += `
+            <line x1="${padLeft}" y1="${y}" x2="${svgW - padRight}" y2="${y}" stroke="#1e293b" stroke-width="1" stroke-dasharray="${lvl === 0 ? 'none' : '3,3'}" />
+            <text x="${padLeft - 6}" y="${y + 3}" fill="#64748b" font-size="9" text-anchor="end" font-family="monospace">${lvl}</text>
+          `;
+        }
+      });
+
+      // Target Deficit Line (500 kcal)
+      const yTarget = getYDaily(500);
+      if (yTarget >= padTop && yTarget <= padTop + plotH) {
+        svgHTML += `
+          <line x1="${padLeft}" y1="${yTarget}" x2="${svgW - padRight}" y2="${yTarget}" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.85" />
+          <text x="${svgW - padRight + 6}" y="${yTarget + 3}" fill="#fbbf24" font-size="9" text-anchor="start" font-family="monospace">500 目標</text>
+        `;
+      }
+
+      // Right axis labels for cumulative
+      [0, Math.round(maxCum * 0.5), maxCum].forEach(cumVal => {
+        const y = getYCum(cumVal);
+        if (y >= padTop && y <= padTop + plotH) {
+          svgHTML += `
+            <text x="${svgW - padRight + 6}" y="${y + 3}" fill="#06b6d4" font-size="8.5" text-anchor="start" font-family="monospace">${cumVal >= 1000 ? (cumVal / 1000).toFixed(1) + 'k' : cumVal}</text>
+          `;
+        }
+      });
+
+      const colWidth = plotW / daysCount;
+      const barWidth = Math.max(6, Math.min(26, colWidth * 0.55));
+      const points = [];
+
+      series.forEach((item, idx) => {
+        const cx = padLeft + idx * colWidth + colWidth / 2;
+        const cyCum = getYCum(item.cumulative);
+        points.push({ cx, cyCum, item });
+
+        // Bar Y and Height
+        let barY, barH, barColor;
+        if (item.deficit >= 0) {
+          barY = getYDaily(item.deficit);
+          barH = Math.max(2, yZero - barY);
+          barColor = item.deficit >= 500 ? '#10b981' : (item.deficit >= 300 ? '#2dd4bf' : '#38bdf8');
+        } else {
+          barY = yZero;
+          barH = Math.max(2, getYDaily(item.deficit) - yZero);
+          barColor = '#f43f5e';
+        }
+
+        const barX = cx - barWidth / 2;
+        const isCurrentSelected = item.dateKey === selectedDate;
+
+        svgHTML += `
+          <g class="chart-bar-group cursor-pointer" data-idx="${idx}">
+            <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barH}" rx="3" fill="${barColor}" opacity="${isCurrentSelected ? '1' : '0.85'}" class="transition-opacity hover:opacity-100" />
+            ${isCurrentSelected ? `
+              <rect x="${barX - 2}" y="${barY - 2}" width="${barWidth + 4}" height="${barH + 4}" rx="4" fill="none" stroke="#ffffff" stroke-width="1.5" />
+            ` : ''}
+            <!-- X axis date text -->
+            <text x="${cx}" y="${svgH - 12}" fill="${isCurrentSelected ? '#34d399' : '#94a3b8'}" font-size="${daysCount > 14 ? '8' : '9.5'}" font-weight="${isCurrentSelected ? 'bold' : 'normal'}" text-anchor="middle" font-family="monospace">
+              ${item.label}
+            </text>
+          </g>
+        `;
+      });
+
+      // Cumulative line and area
+      if (points.length > 1) {
+        const polyPoints = points.map(p => `${p.cx},${p.cyCum}`).join(' ');
+        const areaPoints = `${points[0].cx},${yZero} ` + polyPoints + ` ${points[points.length - 1].cx},${yZero}`;
+
+        svgHTML += `
+          <polygon points="${areaPoints}" fill="url(#cumAreaGrad)" />
+          <polyline points="${polyPoints}" fill="none" stroke="url(#cumLineGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        `;
+      }
+
+      // Draw dots on cumulative line
+      points.forEach(p => {
+        svgHTML += `
+          <circle cx="${p.cx}" cy="${p.cyCum}" r="${p.item.dateKey === selectedDate ? 5 : 3.5}" fill="#06b6d4" stroke="#0f172a" stroke-width="2" class="cursor-pointer" />
+        `;
+      });
+
+      svg.innerHTML = svgHTML;
+
+      // Attach tooltip hover events
+      const barGroups = svg.querySelectorAll('.chart-bar-group');
+      barGroups.forEach(group => {
+        group.addEventListener('mouseenter', (e) => {
+          const idx = parseInt(group.dataset.idx);
+          const data = series[idx];
+          if (!data || !tooltip) return;
+
+          tooltip.innerHTML = `
+            <div class="font-bold text-white flex items-center justify-between gap-2 border-b border-slate-800 pb-1 mb-1">
+              <span>${data.dateKey} (週${data.dayOfWeek})</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded font-mono ${data.deficit >= 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">
+                ${data.deficit >= 0 ? '赤字燃脂' : '熱量盈餘'}
+              </span>
+            </div>
+            <div class="space-y-0.5 font-mono text-[11px]">
+              <div class="flex justify-between gap-3 text-slate-300">
+                <span>🔥 淨赤字：</span>
+                <strong class="${data.deficit >= 0 ? 'text-teal-300' : 'text-rose-400'}">${data.deficit > 0 ? '+' : ''}${data.deficit} kcal</strong>
+              </div>
+              <div class="flex justify-between gap-3 text-slate-400">
+                <span>🧈 純燃脂：</span>
+                <span class="text-emerald-400 font-bold">${data.fatGrams} g 脂肪</span>
+              </div>
+              <div class="flex justify-between gap-3 text-slate-400">
+                <span>📈 累計赤字：</span>
+                <span class="text-cyan-400">${data.cumulative} kcal</span>
+              </div>
+              <div class="flex justify-between gap-3 text-slate-500 text-[10px] pt-0.5 border-t border-slate-800">
+                <span>消耗/攝取：</span>
+                <span>${data.bmr + data.exBurn} / ${data.foodIn} kcal</span>
+              </div>
+            </div>
+          `;
+
+          tooltip.classList.remove('hidden');
+          const rect = svg.getBoundingClientRect();
+          const groupRect = group.getBoundingClientRect();
+          const leftPos = Math.max(10, Math.min(rect.width - 150, groupRect.left - rect.left - 40));
+          tooltip.style.left = `${leftPos}px`;
+          tooltip.style.top = '10px';
+        });
+
+        group.addEventListener('mouseleave', () => {
+          if (tooltip) tooltip.classList.add('hidden');
+        });
+
+        group.addEventListener('click', () => {
+          const idx = parseInt(group.dataset.idx);
+          const data = series[idx];
+          if (data && data.dateKey) {
+            changeDate(data.dateKey);
+          }
+        });
+      });
+    }
+
+    // Trend Range Buttons event listeners
+    document.querySelectorAll('.trend-range-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.trend-range-btn').forEach(b => {
+          b.className = 'trend-range-btn px-2.5 py-1 rounded-lg text-xs text-slate-400 hover:text-white border border-transparent transition';
+        });
+        btn.className = 'trend-range-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 transition';
+        trendSelectedDays = parseInt(btn.dataset.days) || 7;
+        renderDeficitTrendChart();
+      });
+    });
+
+    // Observe net deficit changes to synchronize fat burn metrics in real time
+    if (netDeficitDisplay) {
+      const deficitObserver = new MutationObserver(() => {
+        updateDeficitFatBurn();
+      });
+      deficitObserver.observe(netDeficitDisplay, { childList: true, characterData: true, subtree: true });
+    }
+
     function changeDate(dateKey) {
       selectedDate = dateKey;
       const parsed = parseDateKey(selectedDate);
@@ -1501,7 +2665,9 @@
       updateDateHeader();
       renderExerciseList();
       renderFoodList();
+      renderSleepUI();
       renderCalendarGrid();
+      setTimeout(updateDeficitFatBurn, 50);
     }
 
     function stepDay(offset) {
@@ -2232,10 +3398,12 @@
           await window.sayoStorage.setItem('fitburn_profile', JSON.stringify(profile));
           await window.sayoStorage.setItem('fitburn_records_by_date', JSON.stringify(allRecords));
           await window.sayoStorage.setItem('fitburn_food_records_by_date', JSON.stringify(foodRecords));
+          await window.sayoStorage.setItem('fitburn_sleep_records_by_date', JSON.stringify(sleepRecords));
         } else {
           localStorage.setItem('fitburn_profile', JSON.stringify(profile));
           localStorage.setItem('fitburn_records_by_date', JSON.stringify(allRecords));
           localStorage.setItem('fitburn_food_records_by_date', JSON.stringify(foodRecords));
+          localStorage.setItem('fitburn_sleep_records_by_date', JSON.stringify(sleepRecords));
         }
       } catch (e) {
         console.error('Storage save error', e);
@@ -2244,16 +3412,18 @@
 
     async function loadData() {
       try {
-        let pRaw, rRaw, fRaw, legacyRaw;
+        let pRaw, rRaw, fRaw, sRaw, legacyRaw;
         if (window.sayoStorage) {
           pRaw = await window.sayoStorage.getItem('fitburn_profile');
           rRaw = await window.sayoStorage.getItem('fitburn_records_by_date');
           fRaw = await window.sayoStorage.getItem('fitburn_food_records_by_date');
+          sRaw = await window.sayoStorage.getItem('fitburn_sleep_records_by_date');
           legacyRaw = await window.sayoStorage.getItem('fitburn_exercises');
         } else {
           pRaw = localStorage.getItem('fitburn_profile');
           rRaw = localStorage.getItem('fitburn_records_by_date');
           fRaw = localStorage.getItem('fitburn_food_records_by_date');
+          sRaw = localStorage.getItem('fitburn_sleep_records_by_date');
           legacyRaw = localStorage.getItem('fitburn_exercises');
         }
 
@@ -2271,6 +3441,9 @@
         }
         if (fRaw) {
           foodRecords = JSON.parse(fRaw);
+        }
+        if (sRaw) {
+          sleepRecords = JSON.parse(sRaw);
         }
       } catch (e) {
         console.error('Storage load error', e);
@@ -2292,6 +3465,7 @@
       updatePreview();
       renderExerciseList();
       renderFoodList();
+      renderSleepUI();
       renderOfficialFoodDb();
       renderCalendarGrid();
 
@@ -2472,6 +3646,74 @@
       toggleScheduleText.textContent = '每週訓練安排';
     });
 
+    function calculateSleepMetrics() {
+      const hours = parseFloat(inputSleepHours.value) || 7.5;
+      const bmr = getCalculatedBmr();
+      const hourlyBmr = bmr / 24;
+
+      // Base sleep burn is ~0.92 of hourly BMR
+      let qualityMultiplier = 1.0;
+      let ghScore = 88;
+      let cortisol = '良好低位';
+      let leptin = '食慾穩定充足';
+
+      if (currentSleepQuality === 'great') {
+        qualityMultiplier = 1.08;
+        ghScore = Math.min(98, Math.round(80 + (hours >= 7 && hours <= 8.5 ? 15 : 8)));
+        cortisol = '抑制良好 (低壓力)';
+        leptin = '飽足瘦素旺盛';
+      } else if (currentSleepQuality === 'normal') {
+        qualityMultiplier = 1.0;
+        ghScore = Math.min(85, Math.round(70 + (hours >= 6.5 ? 10 : 0)));
+        cortisol = '正常平穩';
+        leptin = '食慾平穩';
+      } else {
+        qualityMultiplier = 0.85;
+        ghScore = 55;
+        cortisol = '偏高 (易堆積脂肪)';
+        leptin = '瘦素降低 (易飢餓)';
+      }
+
+      const totalSleepBurn = Math.round(hourlyBmr * 0.92 * hours * qualityMultiplier);
+
+      sleepBurnKcal.textContent = totalSleepBurn.toLocaleString();
+      sleepGhLevel.textContent = `${ghScore} 分 (${ghScore >= 80 ? '高峰分泌' : '一般分泌'})`;
+      sleepCortisolStatus.textContent = cortisol;
+      sleepLeptinStatus.textContent = leptin;
+
+      return { hours, quality: currentSleepQuality, burn: totalSleepBurn, ghScore };
+    }
+
+    function renderSleepUI() {
+      const record = sleepRecords[selectedDate] || { hours: 7.5, quality: 'great' };
+      inputSleepHours.value = record.hours || 7.5;
+      currentSleepQuality = record.quality || 'great';
+
+      document.querySelectorAll('.sleep-q-btn').forEach(btn => {
+        if (btn.dataset.quality === currentSleepQuality) {
+          btn.className = 'sleep-q-btn px-2 py-1.5 rounded-lg text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/50 flex flex-col items-center';
+        } else {
+          btn.className = 'sleep-q-btn px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 border border-transparent hover:text-white flex flex-col items-center';
+        }
+      });
+
+      calculateSleepMetrics();
+    }
+
+    function toggleSleepModal(forceOpen = false) {
+      if (forceOpen) {
+        sleepModal.classList.remove('hidden');
+        toggleSleepText.textContent = '收起睡眠分析';
+        sleepModal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
+      const isHidden = sleepModal.classList.toggle('hidden');
+      toggleSleepText.textContent = isHidden ? '睡眠燃脂分析' : '收起睡眠分析';
+      if (!isHidden) {
+        sleepModal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
     function toggleFoodModal(forceOpen = false) {
       if (forceOpen) {
         foodModal.classList.remove('hidden');
@@ -2494,6 +3736,31 @@
     if (openFoodFromCard) {
       openFoodFromCard.addEventListener('click', () => toggleFoodModal(true));
     }
+
+    toggleSleepBtn.addEventListener('click', () => toggleSleepModal());
+    closeSleepBtn.addEventListener('click', () => {
+      sleepModal.classList.add('hidden');
+      toggleSleepText.textContent = '睡眠燃脂分析';
+    });
+
+    inputSleepHours.addEventListener('input', calculateSleepMetrics);
+    sleepQualitySelector.addEventListener('click', (e) => {
+      const btn = e.target.closest('.sleep-q-btn');
+      if (!btn) return;
+      currentSleepQuality = btn.dataset.quality;
+      document.querySelectorAll('.sleep-q-btn').forEach(b => {
+        b.className = 'sleep-q-btn px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 border border-transparent hover:text-white flex flex-col items-center';
+      });
+      btn.className = 'sleep-q-btn px-2 py-1.5 rounded-lg text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/50 flex flex-col items-center';
+      calculateSleepMetrics();
+    });
+
+    saveSleepRecordBtn.addEventListener('click', () => {
+      const data = calculateSleepMetrics();
+      sleepRecords[selectedDate] = data;
+      saveData();
+      alert(`已儲存 ${selectedDate} 的睡眠紀錄！夜間預估燃脂 ${data.burn} kcal，生長激素修復 ${data.ghScore} 分！`);
+    });
 
     window.loadRoutine = function(type) {
       if (type === 'A') {
