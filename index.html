@@ -268,17 +268,17 @@
           </div>
         </div>
 
-        <!-- Instant Target Rate Adjuster (From Image 1) -->
+        <!-- Instant Target Rate Adjuster (Synced with Daily Exercise Goal) -->
         <div class="flex flex-wrap items-center justify-between gap-2.5 text-xs bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
           <div class="flex items-center gap-2">
-            <span class="text-slate-300">馬上試算每日運動赤字：</span>
+            <span class="text-slate-300">試算每日運動消耗：</span>
             <div class="flex items-center gap-1">
-              <input type="number" id="modal-calc-burn" value="600" min="100" max="2500" step="50" class="w-16 bg-slate-950 border border-slate-700 rounded-md px-2 py-0.5 text-white font-mono font-bold text-center focus:outline-none focus:border-emerald-400">
+              <input type="number" id="modal-calc-burn" value="400" min="50" max="2500" step="50" class="w-20 bg-slate-950 border border-slate-700 rounded-md px-2 py-0.5 text-white font-mono font-bold text-center focus:outline-none focus:border-emerald-400">
               <span class="text-slate-400">kcal/天</span>
             </div>
           </div>
           <div class="text-[11px] text-slate-400">
-            每日運動若達 <strong id="modal-burn-display" class="text-emerald-400 font-mono">600</strong> kcal，達成天數即刻動態更新！
+            與「每日運動消耗目標」即時雙向連動！
           </div>
         </div>
 
@@ -751,9 +751,12 @@
       resProgressPct.textContent = `${progressPct}% 完成`;
       resDeficitProgressBar.style.width = `${progressPct}%`;
 
-      // Daily burn rate from modal adjuster
-      const dailyBurnInput = parseFloat(modalCalcBurn.value) || 600;
-      modalBurnDisplay.textContent = dailyBurnInput;
+      // Daily burn rate synced with inputGoal
+      const dailyBurnInput = parseFloat(inputGoal.value) || parseFloat(modalCalcBurn.value) || 400;
+      modalCalcBurn.value = dailyBurnInput;
+      if (modalBurnDisplay) {
+        modalBurnDisplay.textContent = dailyBurnInput;
+      }
 
       // Effective daily deficit: diet deficit ~250 kcal + exercise burn
       const dietDeficit = 250;
@@ -1303,6 +1306,7 @@
     customDuration.addEventListener('input', updatePreview);
 
     modalCalcBurn.addEventListener('input', () => {
+      inputGoal.value = modalCalcBurn.value;
       updateGoalCalculations();
     });
 
@@ -1363,14 +1367,14 @@
     });
 
     applySuggestedGoalBtn.addEventListener('click', () => {
-      const w = parseFloat(inputWeight.value) || 75;
-      const rate = parseFloat(inputRate.value) || 0.5;
-      const dailyDeficit = Math.round((rate * 7700) / 7);
-      // Half from exercise, half from diet
-      const suggestedBurn = Math.min(800, Math.max(250, Math.round(dailyDeficit * 0.7 / 50) * 50));
-      inputGoal.value = suggestedBurn;
+      const burnValue = parseFloat(inputGoal.value) || parseFloat(modalCalcBurn.value) || 400;
+      inputGoal.value = burnValue;
+      modalCalcBurn.value = burnValue;
+      profile.goal = burnValue;
+      saveData();
+      updateStats();
       updateGoalCalculations();
-      alert(`已將每日運動熱量目標設定為 ${suggestedBurn} kcal！記得點擊下方「儲存」按鈕套用。`);
+      alert(`已成功套用！每日運動消耗目標已設定為 ${burnValue} kcal。`);
     });
 
     saveProfileBtn.addEventListener('click', () => {
