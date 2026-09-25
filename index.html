@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitBurn - 健身運動熱量計算器</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-12 antialiased">
+  <div class="max-w-3xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 text-xl font-bold">🔥</span>
+          <h1 class="text-2xl font-black tracking-tight text-white">FitBurn 健身熱量計算</h1>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">精確估算重量訓練與有氧動作消耗熱量</p>
+      </div>
+
+      <!-- User Profile Badge / Toggle -->
+      <button id="open-profile-btn" class="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 px-3 py-1.5 rounded-xl text-xs text-slate-300 transition">
+        <i class="fa-solid fa-user text-emerald-400"></i>
+        <span>體重：<strong id="header-weight-display" class="text-white">75</strong> kg</span>
+      </button>
+    </header>
+
+    <!-- Date Navigation & Calendar Bar -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-md">
+      <div class="flex items-center gap-2">
+        <button id="prev-day-btn" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="前一天">
+          <i class="fa-solid fa-chevron-left text-xs"></i>
+        </button>
+        <button id="today-btn" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition">
+          今天
+        </button>
+        <button id="next-day-btn" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="後一天">
+          <i class="fa-solid fa-chevron-right text-xs"></i>
+        </button>
+        <div class="ml-1">
+          <div class="text-sm font-bold text-white flex items-center gap-1.5">
+            <span id="current-date-label">2026年09月24日</span>
+            <span id="is-today-badge" class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">今日</span>
+          </div>
+          <p id="month-stat-subtext" class="text-[11px] text-slate-400 mt-0.5">本月累計燃脂：0 kcal</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <input type="date" id="native-date-picker" class="hidden">
+        <button id="toggle-calendar-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-xl text-xs text-slate-200 transition">
+          <i class="fa-regular fa-calendar-days text-emerald-400"></i>
+          <span id="toggle-cal-text">展開日曆檢視</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Calendar Month View Modal/Drawer -->
+    <div id="calendar-modal" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-xl">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <button id="cal-prev-month" class="p-1.5 text-slate-400 hover:text-white"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+          <span id="cal-month-title" class="text-sm font-bold text-white">2026 年 9 月</span>
+          <button id="cal-next-month" class="p-1.5 text-slate-400 hover:text-white"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+        </div>
+        <div class="text-[11px] text-slate-400 flex items-center gap-3">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>有訓練</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-700 inline-block"></span>休息</span>
+        </div>
+      </div>
+
+      <!-- Weekday Headers -->
+      <div class="grid grid-cols-7 gap-1 text-center text-xs text-slate-400 font-medium py-1">
+        <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+      </div>
+
+      <!-- Calendar Days Grid -->
+      <div id="calendar-days-grid" class="grid grid-cols-7 gap-1">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- Daily Calorie Summary Card -->
+    <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/40 border border-slate-800 rounded-2xl p-5 shadow-xl">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <span id="summary-date-title" class="text-xs font-semibold uppercase tracking-wider text-emerald-400">當日消耗總計</span>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span id="total-burned" class="text-4xl font-extrabold text-white tracking-tight">0</span>
+            <span class="text-sm font-medium text-slate-400">kcal (大卡)</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-slate-400">總運動時長</span>
+          <p id="total-duration" class="text-lg font-bold text-slate-200 mt-1">0 <span class="text-xs text-slate-500">分鐘</span></p>
+        </div>
+      </div>
+
+      <!-- Goal Progress -->
+      <div class="space-y-1.5 mt-3">
+        <div class="flex justify-between text-xs text-slate-400">
+          <span>目標：<span id="goal-target-text">400</span> kcal</span>
+          <span id="goal-percent-text">0%</span>
+        </div>
+        <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+          <div id="goal-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2.5 rounded-full transition-all duration-500 w-0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Profile & Goal Planning Modal (Collapsible inline) -->
+    <div id="profile-card" class="hidden bg-slate-900 border border-emerald-500/40 rounded-2xl p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-bullseye"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">個人體態與減重目標計算</h3>
+            <p class="text-[11px] text-slate-400">根據身高、體重與活動量，精密推估 BMR、TDEE 與目標達成期程</p>
+          </div>
+        </div>
+        <button id="close-profile-btn" class="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800">
+          <i class="fa-solid fa-xmark mr-1"></i>收起
+        </button>
+      </div>
+
+      <!-- Basic Body Metrics -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">目前體重 (kg)</label>
+          <input type="number" id="input-weight" value="75" min="30" max="250" step="0.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">身高 (cm)</label>
+          <input type="number" id="input-height" value="172" min="100" max="250" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">年齡</label>
+          <input type="number" id="input-age" value="28" min="15" max="100" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">生理性別</label>
+          <select id="input-gender" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+            <option value="male" selected>男 (Male)</option>
+            <option value="female">女 (Female)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Activity Level & Goal Type -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">日常活動量等級</label>
+          <select id="input-activity" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <option value="1.2">久坐少動 (辦公室工作，幾乎不運動)</option>
+            <option value="1.375" selected>輕度活動 (每週運動 1~3 天)</option>
+            <option value="1.55">中度活躍 (每週運動 3~5 天)</option>
+            <option value="1.725">高度活躍 (每週運動 6~7 天高強度)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">目前體脂率 (可選 %)</label>
+          <div class="relative">
+            <input type="number" id="input-bodyfat" value="23" min="5" max="50" step="0.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 pr-8">
+            <span class="absolute right-3 top-1.5 text-xs text-slate-400">%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Target Goal Planning Inputs -->
+      <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-flag-checkered text-emerald-400"></i> 目標體重與減重策略
+          </span>
+          <span class="text-[11px] text-slate-400">1 公斤脂肪約 7,700 kcal</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] text-slate-400 mb-1">目標體重 (kg)</label>
+            <input type="number" id="input-target-weight" value="68" min="35" max="200" step="0.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-400 mb-1">減重節奏速度</label>
+            <select id="input-rate" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <option value="0.3">溫和減脂 (每週 -0.3 kg · 赤字 330 kcal)</option>
+              <option value="0.5" selected>健康推薦 (每週 -0.5 kg · 赤字 550 kcal)</option>
+              <option value="0.75">積極減脂 (每週 -0.75 kg · 赤字 825 kcal)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-400 mb-1">每日運動消耗目標 (kcal)</label>
+            <input type="number" id="input-goal" value="400" min="50" max="3000" step="50" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-bold text-white focus:outline-none focus:border-emerald-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time Calculated Projection Results -->
+      <div id="goal-calc-result" class="bg-gradient-to-r from-emerald-950/40 via-slate-800/60 to-teal-950/40 border border-emerald-500/30 rounded-xl p-3.5 space-y-2.5">
+        <div class="flex items-center justify-between text-xs pb-1.5 border-b border-slate-700/60">
+          <span class="text-slate-300 font-semibold"><i class="fa-solid fa-chart-pie text-emerald-400 mr-1"></i>代謝估算</span>
+          <span class="text-slate-400">基礎代謝 BMR: <strong id="res-bmr" class="text-white font-mono">1,680</strong> kcal · TDEE: <strong id="res-tdee" class="text-white font-mono">2,310</strong> kcal</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+          <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 block">需調整體重</span>
+            <span id="res-delta-weight" class="text-sm font-extrabold text-amber-400">-7.0 kg</span>
+          </div>
+          <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 block">總燃脂熱量赤字</span>
+            <span id="res-total-deficit" class="text-sm font-extrabold text-white">53,900 kcal</span>
+          </div>
+          <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 block">預估達成週數</span>
+            <span id="res-weeks" class="text-sm font-extrabold text-emerald-400">約 14 週</span>
+          </div>
+          <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 block">預計達成天數</span>
+            <span id="res-days" class="text-sm font-extrabold text-teal-300">98 天</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-[11px] text-slate-300 pt-1">
+          <span id="res-plan-tip">💡 建議每日攝取約 <strong>1,760 kcal</strong>，搭配每日運動燃脂 <strong>400 kcal</strong> 即可穩健達標！</span>
+          <button type="button" id="apply-suggested-goal-btn" class="text-emerald-400 hover:text-emerald-300 hover:underline shrink-0 ml-2">
+            套用為每日目標
+          </button>
+        </div>
+      </div>
+
+      <button id="save-profile-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold py-2.5 rounded-lg transition shadow-md">
+        儲存體態與目標設定
+      </button>
+    </div>
+
+    <!-- Exercise Logging Form -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h2 class="text-base font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-dumbbell text-emerald-400"></i> 新增運動紀錄
+        </h2>
+        <div class="flex gap-1 text-xs">
+          <button id="tab-preset" class="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/40">常用清單</button>
+          <button id="tab-custom" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent">自訂動作</button>
+        </div>
+      </div>
+
+      <!-- Preset Selector View -->
+      <div id="preset-view" class="space-y-4">
+        <!-- Muscle Group Quick Filter Chips -->
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">部位快速篩選</label>
+          <div class="flex flex-wrap gap-1.5" id="muscle-filter-chips">
+            <button type="button" data-group="all" class="filter-chip px-2.5 py-1 text-xs rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/40">全部動作</button>
+            <button type="button" data-group="chest" class="filter-chip px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent">練胸 (Chest)</button>
+            <button type="button" data-group="back" class="filter-chip px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent">練背 (Back)</button>
+            <button type="button" data-group="legs" class="filter-chip px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent">練腿 (Legs)</button>
+            <button type="button" data-group="shoulder-arm" class="filter-chip px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent">肩與手臂 (Arms)</button>
+            <button type="button" data-group="core" class="filter-chip px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent">核心腹肌 (Core)</button>
+            <button type="button" data-group="cardio" class="filter-chip px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent">有氧燃脂 (Cardio)</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">選擇訓練動作</label>
+          <select id="preset-select" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+            <!-- Chest -->
+            <optgroup label="💥 練胸部 (Chest)" data-group="chest">
+              <option value="bench-press" data-met="6.0" data-type="strength" data-group="chest">平板槓鈴臥推 (Barbell Bench Press) - MET 6.0</option>
+              <option value="incline-dumbbell" data-met="6.0" data-type="strength" data-group="chest">上斜啞鈴臥推 (Incline DB Press) - MET 6.0</option>
+              <option value="dips" data-met="6.5" data-type="strength" data-group="chest">雙槓臂屈伸 (Chest Dips) - MET 6.5</option>
+              <option value="cable-crossover" data-met="5.0" data-type="strength" data-group="chest">滑輪夾胸 / 飛鳥 (Cable Crossover) - MET 5.0</option>
+              <option value="pushups" data-met="5.5" data-type="strength" data-group="chest">標準伏地挺身 (Push-ups) - MET 5.5</option>
+              <option value="pec-deck" data-met="5.0" data-type="strength" data-group="chest">蝴蝶機夾胸 (Pec Deck Machine) - MET 5.0</option>
+            </optgroup>
+
+            <!-- Back -->
+            <optgroup label="🧗‍♂️ 練背部 (Back)" data-group="back">
+              <option value="deadlift" data-met="7.5" data-type="strength" data-group="back">傳統硬舉 (Deadlifts) - MET 7.5</option>
+              <option value="pullup" data-met="7.5" data-type="strength" data-group="back">引體向上 (Pull-ups / Chin-ups) - MET 7.5</option>
+              <option value="lat-pulldown" data-met="6.0" data-type="strength" data-group="back">坐姿滑輪下拉 (Lat Pulldown) - MET 6.0</option>
+              <option value="barbell-row" data-met="6.5" data-type="strength" data-group="back">槓鈴俯身划船 (Barbell Row) - MET 6.5</option>
+              <option value="dumbbell-row" data-met="6.0" data-type="strength" data-group="back">單臂啞鈴划船 (One-arm DB Row) - MET 6.0</option>
+              <option value="seated-cable-row" data-met="5.5" data-type="strength" data-group="back">坐姿滑輪划船 (Seated Cable Row) - MET 5.5</option>
+              <option value="straight-arm-pulldown" data-met="5.0" data-type="strength" data-group="back">直臂下壓 (Straight Arm Pulldown) - MET 5.0</option>
+            </optgroup>
+
+            <!-- Legs & Glutes -->
+            <optgroup label="🦵 練腿與臀部 (Legs & Glutes)" data-group="legs">
+              <option value="squat" data-met="7.0" data-type="strength" data-group="legs">槓鈴深蹲 (Back Squat) - MET 7.0</option>
+              <option value="hip-thrust" data-met="6.5" data-type="strength" data-group="legs">槓鈴臀推 (Hip Thrust) - MET 6.5</option>
+              <option value="romanian-deadlift" data-met="6.5" data-type="strength" data-group="legs">羅馬尼亞硬舉 (RDL) - MET 6.5</option>
+              <option value="leg-press" data-met="6.0" data-type="strength" data-group="legs">機械腿推 / 腿舉 (Leg Press) - MET 6.0</option>
+              <option value="bulgarian-split-squat" data-met="6.5" data-type="strength" data-group="legs">保加利亞分腿蹲 (Bulgarian Split Squat) - MET 6.5</option>
+              <option value="walking-lunges" data-met="6.0" data-type="strength" data-group="legs">負重弓步蹲 (Walking Lunges) - MET 6.0</option>
+              <option value="leg-extension-curl" data-met="5.0" data-type="strength" data-group="legs">坐姿腿屈伸 / 腿後彎舉 - MET 5.0</option>
+              <option value="calf-raises" data-met="4.5" data-type="strength" data-group="legs">站姿/坐姿提踵 (Calf Raises) - MET 4.5</option>
+            </optgroup>
+
+            <!-- Shoulders & Arms -->
+            <optgroup label="🛡️ 練肩部與手臂 (Shoulders & Arms)" data-group="shoulder-arm">
+              <option value="overhead-press" data-met="6.0" data-type="strength" data-group="shoulder-arm">站姿槓鈴/啞鈴肩推 (OHP) - MET 6.0</option>
+              <option value="lateral-raise" data-met="4.5" data-type="strength" data-group="shoulder-arm">啞鈴側平舉 (Lateral Raise) - MET 4.5</option>
+              <option value="face-pull" data-met="5.0" data-type="strength" data-group="shoulder-arm">滑輪臉拉 / 後三角飛鳥 (Face Pull) - MET 5.0</option>
+              <option value="biceps-curl" data-met="4.5" data-type="strength" data-group="shoulder-arm">啞鈴/二頭槓彎舉 (Biceps Curl) - MET 4.5</option>
+              <option value="triceps-pushdown" data-met="4.5" data-type="strength" data-group="shoulder-arm">三頭肌滑輪下壓 (Triceps Pushdown) - MET 4.5</option>
+            </optgroup>
+
+            <!-- Core & Abs -->
+            <optgroup label="⚡ 核心與腹肌訓練 (Core & Abs)" data-group="core">
+              <option value="plank" data-met="5.0" data-type="core" data-group="core">棒式 / 側棒式 (Plank) - MET 5.0</option>
+              <option value="legraise" data-met="6.5" data-type="core" data-group="core">懸垂舉腿 (Hanging Leg Raise) - MET 6.5</option>
+              <option value="abwheel" data-met="6.5" data-type="core" data-group="core">健腹輪推進 (Ab Wheel) - MET 6.5</option>
+              <option value="crunch" data-met="5.0" data-type="core" data-group="core">捲腹 / 負重捲腹 (Crunches) - MET 5.0</option>
+              <option value="russian-twist" data-met="5.5" data-type="core" data-group="core">俄羅斯轉體 (Russian Twist) - MET 5.5</option>
+              <option value="mountain-climber" data-met="8.0" data-type="core" data-group="core">登山者式 (Mountain Climbers) - MET 8.0</option>
+            </optgroup>
+
+            <!-- Cardio & HIIT -->
+            <optgroup label="🏃 有氧與減脂 (Cardio & HIIT)" data-group="cardio">
+              <option value="brisk-walking" data-met="4.5" data-type="cardio" data-group="cardio">大步快走 / 健走 (Brisk Walking 5-6 km/h) - MET 4.5</option>
+              <option value="walking-casual" data-met="3.5" data-type="cardio" data-group="cardio">一般散步 / 步行 (Casual Walk 4 km/h) - MET 3.5</option>
+              <option value="inclinewalk" data-met="6.5" data-type="cardio" data-group="cardio">跑步機坡度快走 (Incline Walk) - MET 6.5</option>
+              <option value="run" data-met="8.5" data-type="cardio" data-group="cardio">慢跑 (8-10 km/h) - MET 8.5</option>
+              <option value="hiit" data-met="9.5" data-type="cardio" data-group="cardio">HIIT 高強度間歇訓練 - MET 9.5</option>
+              <option value="jumprope" data-met="11.0" data-type="cardio" data-group="cardio">快速跳繩 (Jump Rope) - MET 11.0</option>
+              <option value="cycle" data-met="7.5" data-type="cardio" data-group="cardio">飛輪 / 自行車 (Cycling) - MET 7.5</option>
+              <option value="rower" data-met="8.0" data-type="cardio" data-group="cardio">划船機 (Rowing Machine) - MET 8.0</option>
+              <option value="stairmaster" data-met="9.0" data-type="cardio" data-group="cardio">階梯機 / 爬梯機 (Stair Climber) - MET 9.0</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- Mode Selector: Weight Training (Sets/Reps/Weight) vs Cardio/Duration -->
+        <div class="flex items-center justify-between bg-slate-950/60 p-2 rounded-xl border border-slate-800 text-xs">
+          <span class="text-slate-400 font-medium">記錄模式：</span>
+          <div class="flex gap-1.5">
+            <button type="button" id="mode-strength-btn" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/40 transition">
+              <i class="fa-solid fa-layer-group mr-1"></i>重訓組數/重量模式
+            </button>
+            <button type="button" id="mode-duration-btn" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent transition">
+              <i class="fa-regular fa-clock mr-1"></i>純時間模式
+            </button>
+          </div>
+        </div>
+
+        <!-- Strength / Sets-Reps-Weight Controls -->
+        <div id="strength-inputs-panel" class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3.5 space-y-3">
+          <div class="grid grid-cols-3 gap-2.5">
+            <!-- Sets -->
+            <div>
+              <label class="block text-[11px] font-medium text-slate-300 mb-1">組數 (Sets)</label>
+              <div class="flex items-center bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+                <button type="button" id="set-minus" class="px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-slate-700 text-xs">-</button>
+                <input type="number" id="input-sets" value="4" min="1" max="30" class="w-full bg-transparent text-center text-sm font-bold text-white focus:outline-none py-1">
+                <button type="button" id="set-plus" class="px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-slate-700 text-xs">+</button>
+              </div>
+            </div>
+            <!-- Reps -->
+            <div>
+              <label class="block text-[11px] font-medium text-slate-300 mb-1">每組次數 (Reps)</label>
+              <div class="flex items-center bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+                <button type="button" id="rep-minus" class="px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-slate-700 text-xs">-</button>
+                <input type="number" id="input-reps" value="10" min="1" max="100" class="w-full bg-transparent text-center text-sm font-bold text-white focus:outline-none py-1">
+                <button type="button" id="rep-plus" class="px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-slate-700 text-xs">+</button>
+              </div>
+            </div>
+            <!-- Weight -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-[11px] font-medium text-slate-300">重量 (kg)</label>
+                <button type="button" id="btn-bodyweight" class="text-[10px] text-emerald-400 hover:underline">徒手</button>
+              </div>
+              <div class="flex items-center bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+                <button type="button" id="weight-minus" class="px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-slate-700 text-xs">-</button>
+                <input type="number" id="input-lift-weight" value="50" min="0" max="500" step="2.5" class="w-full bg-transparent text-center text-sm font-bold text-white focus:outline-none py-1">
+                <button type="button" id="weight-plus" class="px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-slate-700 text-xs">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Auto-estimated duration hint & manual override -->
+          <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-800/80 text-slate-400">
+            <span class="flex items-center gap-1">
+              <i class="fa-solid fa-calculator text-emerald-400 text-[10px]"></i>
+              組間休息與訓練預估：
+            </span>
+            <div class="flex items-center gap-1.5">
+              <input type="number" id="exercise-duration" value="12" min="1" max="300" class="w-14 bg-slate-800 border border-slate-700 rounded-md px-1.5 py-0.5 text-right text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
+              <span class="text-slate-400">分鐘</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pure duration input (shown in duration mode) -->
+        <div id="duration-input-panel" class="hidden bg-slate-950/80 border border-slate-800/80 rounded-xl p-3.5">
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">運動時間 (分鐘)</label>
+          <div class="relative">
+            <input type="number" id="exercise-pure-duration" value="20" min="1" max="300" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 pr-12">
+            <span class="absolute right-3 top-2 text-xs text-slate-400">分鐘</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">細節或感受備註 (可選)</label>
+          <input type="text" id="exercise-notes" placeholder="例如：最後一組力竭、組間休息 90 秒..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+        </div>
+      </div>
+
+      <!-- Custom Exercise View -->
+      <div id="custom-view" class="hidden space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">自訂動作名稱</label>
+          <input type="text" id="custom-name" placeholder="輸入動作名稱 (如：槓鈴臀推、戰繩、農夫走路...)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">強度 (MET)</label>
+            <select id="custom-met" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+              <option value="3.5">輕度 (拉筋/伸展 MET 3.5)</option>
+              <option value="5.5">中度 (一般重訓/健走 MET 5.5)</option>
+              <option value="7.5" selected>中高強度 (進階重訓/慢跑 MET 7.5)</option>
+              <option value="9.5">高強度 (HIIT/快速跳繩 MET 9.5)</option>
+              <option value="12.0">超高強度 (全速衝刺/跨欄 MET 12)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">時長 (分鐘)</label>
+            <input type="number" id="custom-duration" value="15" min="1" max="300" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">動作類別</label>
+            <select id="custom-category" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+              <option value="strength">重量訓練</option>
+              <option value="core">核心腹肌</option>
+              <option value="cardio">有氧燃脂</option>
+              <option value="other">綜合體能</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Custom Sets / Reps / Weight -->
+        <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3.5 space-y-2.5">
+          <span class="text-xs font-medium text-slate-300 block">組數、次數與重量設定 (重訓選填)</span>
+          <div class="grid grid-cols-3 gap-2.5">
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">組數</label>
+              <input type="number" id="custom-sets" value="4" min="1" max="30" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-sm font-bold text-white text-center focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">每組次數</label>
+              <input type="number" id="custom-reps" value="10" min="1" max="100" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-sm font-bold text-white text-center focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">重量 (kg)</label>
+              <input type="number" id="custom-lift-weight" value="40" min="0" max="500" step="2.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-sm font-bold text-white text-center focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">細節備註 (可選)</label>
+          <input type="text" id="custom-notes" placeholder="例如：每組休息 60 秒、姿勢標準" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+        </div>
+      </div>
+
+      <!-- Real-time Preview & Add Button -->
+      <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+        <div class="text-xs text-slate-400">
+          預估消耗：<span id="preview-burn" class="text-emerald-400 font-bold text-base">0</span> kcal
+        </div>
+        <button id="add-exercise-btn" class="bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-1.5">
+          <i class="fa-solid fa-plus"></i> 加入紀錄
+        </button>
+      </div>
+    </div>
+
+    <!-- Workout History List -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-emerald-400"></i>
+          <span id="history-date-header">當日運動清單</span>
+          <span id="item-count-badge" class="bg-slate-800 text-slate-300 text-xs px-2 py-0.5 rounded-full font-normal">0 項</span>
+        </h2>
+        <button id="clear-all-btn" class="text-xs text-rose-400 hover:text-rose-300 hover:underline">
+          清空該日
+        </button>
+      </div>
+
+      <div id="exercise-list" class="space-y-2.5">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div id="empty-state" class="py-8 text-center text-slate-500 space-y-2">
+        <i class="fa-solid fa-person-running text-3xl opacity-40"></i>
+        <p class="text-sm">該日尚未安排運動動作，立即在上方加入訓練吧！</p>
+      </div>
+    </div>
+
+    <!-- Scientific Formula & Tips Footer -->
+    <footer class="text-xs text-slate-500 text-center space-y-1 pt-2">
+      <p>💡 熱量計算採用國際標準代謝當量公式：$\text{Calories} = \text{MET} \times 3.5 \times \text{體重(kg)} / 200 \times \text{時間(分)}$</p>
+      <p>數據自動儲存於本機，隨時回訪皆可查看當前紀錄。</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // Utilities
+    function formatDateKey(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseDateKey(str) {
+      const [y, m, d] = str.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    // State
+    let profile = {
+      weight: 75,
+      height: 172,
+      age: 28,
+      gender: 'male',
+      activity: 1.375,
+      bodyFat: 23,
+      targetWeight: 68,
+      weeklyRate: 0.5,
+      goal: 400
+    };
+    // Format: { 'YYYY-MM-DD': [ { id, name, met, duration, category, notes, calories, createdAt } ] }
+    let allRecords = {};
+    let selectedDate = formatDateKey(new Date());
+    let calDisplayYear = new Date().getFullYear();
+    let calDisplayMonth = new Date().getMonth(); // 0-indexed
+    let activeTab = 'preset'; // 'preset' or 'custom'
+    let currentRecordMode = 'strength'; // 'strength' or 'duration'
+
+    // DOM Elements
+    const headerWeightDisplay = document.getElementById('header-weight-display');
+    const profileCard = document.getElementById('profile-card');
+    const openProfileBtn = document.getElementById('open-profile-btn');
+    const closeProfileBtn = document.getElementById('close-profile-btn');
+    const saveProfileBtn = document.getElementById('save-profile-btn');
+    const inputWeight = document.getElementById('input-weight');
+    const inputHeight = document.getElementById('input-height');
+    const inputAge = document.getElementById('input-age');
+    const inputGender = document.getElementById('input-gender');
+    const inputActivity = document.getElementById('input-activity');
+    const inputBodyFat = document.getElementById('input-bodyfat');
+    const inputTargetWeight = document.getElementById('input-target-weight');
+    const inputRate = document.getElementById('input-rate');
+    const inputGoal = document.getElementById('input-goal');
+
+    // Calculation result elements
+    const resBmr = document.getElementById('res-bmr');
+    const resTdee = document.getElementById('res-tdee');
+    const resDeltaWeight = document.getElementById('res-delta-weight');
+    const resTotalDeficit = document.getElementById('res-total-deficit');
+    const resWeeks = document.getElementById('res-weeks');
+    const resDays = document.getElementById('res-days');
+    const resPlanTip = document.getElementById('res-plan-tip');
+    const applySuggestedGoalBtn = document.getElementById('apply-suggested-goal-btn');
+
+    // Date navigation elements
+    const prevDayBtn = document.getElementById('prev-day-btn');
+    const nextDayBtn = document.getElementById('next-day-btn');
+    const todayBtn = document.getElementById('today-btn');
+    const currentDateLabel = document.getElementById('current-date-label');
+    const isTodayBadge = document.getElementById('is-today-badge');
+    const monthStatSubtext = document.getElementById('month-stat-subtext');
+    const toggleCalendarBtn = document.getElementById('toggle-calendar-btn');
+    const toggleCalText = document.getElementById('toggle-cal-text');
+    const calendarModal = document.getElementById('calendar-modal');
+    const calPrevMonth = document.getElementById('cal-prev-month');
+    const calNextMonth = document.getElementById('cal-next-month');
+    const calMonthTitle = document.getElementById('cal-month-title');
+    const calendarDaysGrid = document.getElementById('calendar-days-grid');
+    const summaryDateTitle = document.getElementById('summary-date-title');
+    const historyDateHeader = document.getElementById('history-date-header');
+
+    const totalBurnedEl = document.getElementById('total-burned');
+    const totalDurationEl = document.getElementById('total-duration');
+    const goalTargetText = document.getElementById('goal-target-text');
+    const goalPercentText = document.getElementById('goal-percent-text');
+    const goalProgressBar = document.getElementById('goal-progress-bar');
+
+    const tabPreset = document.getElementById('tab-preset');
+    const tabCustom = document.getElementById('tab-custom');
+    const presetView = document.getElementById('preset-view');
+    const customView = document.getElementById('custom-view');
+
+    const presetSelect = document.getElementById('preset-select');
+    const muscleFilterChips = document.getElementById('muscle-filter-chips');
+    const modeStrengthBtn = document.getElementById('mode-strength-btn');
+    const modeDurationBtn = document.getElementById('mode-duration-btn');
+    const strengthInputsPanel = document.getElementById('strength-inputs-panel');
+    const durationInputPanel = document.getElementById('duration-input-panel');
+
+    const inputSets = document.getElementById('input-sets');
+    const inputReps = document.getElementById('input-reps');
+    const inputLiftWeight = document.getElementById('input-lift-weight');
+    const setMinusBtn = document.getElementById('set-minus');
+    const setPlusBtn = document.getElementById('set-plus');
+    const repMinusBtn = document.getElementById('rep-minus');
+    const repPlusBtn = document.getElementById('rep-plus');
+    const weightMinusBtn = document.getElementById('weight-minus');
+    const weightPlusBtn = document.getElementById('weight-plus');
+    const btnBodyweight = document.getElementById('btn-bodyweight');
+
+    const exerciseDuration = document.getElementById('exercise-duration');
+    const exercisePureDuration = document.getElementById('exercise-pure-duration');
+    const exerciseNotes = document.getElementById('exercise-notes');
+
+    const customName = document.getElementById('custom-name');
+    const customMet = document.getElementById('custom-met');
+    const customDuration = document.getElementById('custom-duration');
+    const customCategory = document.getElementById('custom-category');
+    const customSets = document.getElementById('custom-sets');
+    const customReps = document.getElementById('custom-reps');
+    const customLiftWeight = document.getElementById('custom-lift-weight');
+    const customNotes = document.getElementById('custom-notes');
+
+    const previewBurnEl = document.getElementById('preview-burn');
+    const addExerciseBtn = document.getElementById('add-exercise-btn');
+    const exerciseListEl = document.getElementById('exercise-list');
+    const emptyStateEl = document.getElementById('empty-state');
+    const itemCountBadge = document.getElementById('item-count-badge');
+    const clearAllBtn = document.getElementById('clear-all-btn');
+
+    // Body & Target Weight Goal Calculations
+    function updateGoalCalculations() {
+      const w = parseFloat(inputWeight.value) || profile.weight;
+      const h = parseFloat(inputHeight.value) || profile.height;
+      const age = parseInt(inputAge.value) || profile.age;
+      const gender = inputGender.value || profile.gender;
+      const act = parseFloat(inputActivity.value) || profile.activity;
+      const targetW = parseFloat(inputTargetWeight.value) || profile.targetWeight;
+      const rate = parseFloat(inputRate.value) || profile.weeklyRate;
+
+      // Mifflin-St Jeor formula
+      let bmr = Math.round(10 * w + 6.25 * h - 5 * age + (gender === 'male' ? 5 : -161));
+      let tdee = Math.round(bmr * act);
+
+      resBmr.textContent = bmr.toLocaleString();
+      resTdee.textContent = tdee.toLocaleString();
+
+      const delta = +(targetW - w).toFixed(1);
+      const isWeightLoss = delta < 0;
+      const absDelta = Math.abs(delta);
+
+      if (delta === 0) {
+        resDeltaWeight.textContent = '維持目前體重';
+        resDeltaWeight.className = 'text-sm font-extrabold text-emerald-400';
+        resTotalDeficit.textContent = '0 kcal';
+        resWeeks.textContent = '已達成';
+        resDays.textContent = '維持期';
+        resPlanTip.innerHTML = `💡 建議每日攝取平衡熱量 <strong>${tdee.toLocaleString()} kcal</strong>，並維持定期訓練維持體態與線條！`;
+      } else if (isWeightLoss) {
+        // Weight loss: approx 7700 kcal deficit per 1kg fat
+        const totalDeficit = Math.round(absDelta * 7700);
+        const dailyDeficit = Math.round((rate * 7700) / 7);
+        const weeksNeeded = +(absDelta / rate).toFixed(1);
+        const daysNeeded = Math.round(weeksNeeded * 7);
+
+        resDeltaWeight.textContent = `減重 -${absDelta} kg`;
+        resDeltaWeight.className = 'text-sm font-extrabold text-amber-400';
+        resTotalDeficit.textContent = `${totalDeficit.toLocaleString()} kcal`;
+        resWeeks.textContent = `約 ${weeksNeeded} 週`;
+        resDays.textContent = `${daysNeeded} 天`;
+
+        const targetIntake = Math.max(1200, tdee - dailyDeficit);
+        resPlanTip.innerHTML = `💡 每日創造 <strong>${dailyDeficit} kcal</strong> 熱量赤字 (例如飲食控制攝取約 <strong>${targetIntake.toLocaleString()} kcal</strong> + 運動消耗 <strong>${inputGoal.value} kcal</strong>)，預計 <strong>${daysNeeded} 天 (${weeksNeeded} 週)</strong> 達成 ${targetW} kg！`;
+      } else {
+        // Muscle Gain / Weight Gain
+        const totalSurplus = Math.round(absDelta * 5000);
+        const weeksNeeded = +(absDelta / (rate * 0.6)).toFixed(1);
+        const daysNeeded = Math.round(weeksNeeded * 7);
+
+        resDeltaWeight.textContent = `增肌增重 +${absDelta} kg`;
+        resDeltaWeight.className = 'text-sm font-extrabold text-cyan-400';
+        resTotalDeficit.textContent = `+${totalSurplus.toLocaleString()} kcal`;
+        resWeeks.textContent = `約 ${weeksNeeded} 週`;
+        resDays.textContent = `${daysNeeded} 天`;
+        resPlanTip.innerHTML = `💡 增肌建議維持每日熱量微盈餘 (約 <strong>${(tdee + 300).toLocaleString()} kcal</strong>)，並專注漸進式重訓與高蛋白質攝取！`;
+      }
+    }
+
+    // Formula: MET * 3.5 * weight(kg) / 200 * duration(mins)
+    function calculateCalories(met, weightKg, durationMins) {
+      if (!met || !weightKg || !durationMins) return 0;
+      return Math.round((met * 3.5 * weightKg / 200) * durationMins);
+    }
+
+    function getCurrentExercises() {
+      return allRecords[selectedDate] || [];
+    }
+
+    // Auto calculate estimated duration based on sets (approx 2.5 - 3 mins per set with rest)
+    function autoEstimateDurationFromSets() {
+      const sets = parseInt(inputSets.value) || 4;
+      const estimatedMins = Math.max(3, Math.round(sets * 2.8));
+      exerciseDuration.value = estimatedMins;
+      updatePreview();
+    }
+
+    // Set Record Mode in Preset
+    function setRecordMode(mode) {
+      currentRecordMode = mode;
+      if (mode === 'strength') {
+        modeStrengthBtn.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/40 transition';
+        modeDurationBtn.className = 'px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent transition';
+        strengthInputsPanel.classList.remove('hidden');
+        durationInputPanel.classList.add('hidden');
+      } else {
+        modeDurationBtn.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/40 transition';
+        modeStrengthBtn.className = 'px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent transition';
+        durationInputPanel.classList.remove('hidden');
+        strengthInputsPanel.classList.add('hidden');
+      }
+      updatePreview();
+    }
+
+    // Update real-time preview
+    function updatePreview() {
+      let met, duration;
+      if (activeTab === 'preset') {
+        const selectedOpt = presetSelect.options[presetSelect.selectedIndex];
+        met = parseFloat(selectedOpt.dataset.met) || 6.0;
+        if (currentRecordMode === 'strength') {
+          duration = parseFloat(exerciseDuration.value) || 0;
+        } else {
+          duration = parseFloat(exercisePureDuration.value) || 0;
+        }
+      } else {
+        met = parseFloat(customMet.value) || 7.5;
+        duration = parseFloat(customDuration.value) || 0;
+      }
+      const kcal = calculateCalories(met, profile.weight, duration);
+      previewBurnEl.textContent = kcal;
+    }
+
+    // Switch Tabs
+    function setTab(tab) {
+      activeTab = tab;
+      if (tab === 'preset') {
+        tabPreset.className = 'px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/40';
+        tabCustom.className = 'px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent';
+        presetView.classList.remove('hidden');
+        customView.classList.add('hidden');
+      } else {
+        tabCustom.className = 'px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/40';
+        tabPreset.className = 'px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent';
+        customView.classList.remove('hidden');
+        presetView.classList.add('hidden');
+      }
+      updatePreview();
+    }
+
+    // Date Navigation Logic
+    function changeDate(dateKey) {
+      selectedDate = dateKey;
+      const parsed = parseDateKey(selectedDate);
+      calDisplayYear = parsed.getFullYear();
+      calDisplayMonth = parsed.getMonth();
+
+      updateDateHeader();
+      renderExerciseList();
+      renderCalendarGrid();
+    }
+
+    function stepDay(offset) {
+      const d = parseDateKey(selectedDate);
+      d.setDate(d.getDate() + offset);
+      changeDate(formatDateKey(d));
+    }
+
+    function updateDateHeader() {
+      const todayStr = formatDateKey(new Date());
+      const d = parseDateKey(selectedDate);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+      const weekDayStr = weekdays[d.getDay()];
+
+      currentDateLabel.textContent = `${year}年${month}月${day}日 (週${weekDayStr})`;
+
+      if (selectedDate === todayStr) {
+        isTodayBadge.classList.remove('hidden');
+        isTodayBadge.textContent = '今日';
+        summaryDateTitle.textContent = '今日消耗總計';
+        historyDateHeader.textContent = '今日運動清單';
+      } else {
+        isTodayBadge.classList.add('hidden');
+        summaryDateTitle.textContent = `${month}月${day}日 消耗總計`;
+        historyDateHeader.textContent = `${month}月${day}日 運動清單`;
+      }
+
+      // Calculate monthly stats
+      const monthPrefix = `${year}-${month}`;
+      let monthTotalKcal = 0;
+      let monthActiveDays = 0;
+      Object.keys(allRecords).forEach(key => {
+        if (key.startsWith(monthPrefix) && allRecords[key].length > 0) {
+          monthActiveDays++;
+          monthTotalKcal += allRecords[key].reduce((s, it) => s + it.calories, 0);
+        }
+      });
+
+      monthStatSubtext.textContent = `${month}月累計燃脂：${monthTotalKcal} kcal · 運動 ${monthActiveDays} 天`;
+    }
+
+    // Calendar Grid Rendering
+    function renderCalendarGrid() {
+      calMonthTitle.textContent = `${calDisplayYear} 年 ${calDisplayMonth + 1} 月`;
+      calendarDaysGrid.innerHTML = '';
+
+      const firstDayOfMonth = new Date(calDisplayYear, calDisplayMonth, 1).getDay();
+      const daysInMonth = new Date(calDisplayYear, calDisplayMonth + 1, 0).getDate();
+      const todayStr = formatDateKey(new Date());
+
+      // Empty padding cells before first day
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'h-11 rounded-lg opacity-20';
+        calendarDaysGrid.appendChild(emptyCell);
+      }
+
+      // Day cells
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateKey = `${calDisplayYear}-${String(calDisplayMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayRecords = allRecords[dateKey] || [];
+        const hasWorkouts = dayRecords.length > 0;
+        const totalDayKcal = hasWorkouts ? dayRecords.reduce((acc, c) => acc + c.calories, 0) : 0;
+        const isSelected = dateKey === selectedDate;
+        const isToday = dateKey === todayStr;
+
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = `h-11 rounded-xl p-1 flex flex-col items-center justify-between text-xs transition relative border ${
+          isSelected
+            ? 'bg-emerald-500 text-slate-950 font-bold border-emerald-400 shadow-md ring-2 ring-emerald-400/50'
+            : isToday
+            ? 'bg-slate-800 text-emerald-400 font-bold border-emerald-500/40 hover:bg-slate-700'
+            : hasWorkouts
+            ? 'bg-slate-800/80 text-white border-slate-700 hover:border-slate-500'
+            : 'bg-slate-900 text-slate-400 border-slate-800/60 hover:bg-slate-800'
+        }`;
+
+        cell.innerHTML = `
+          <span class="text-[11px] leading-none ${isSelected ? 'text-slate-950' : isToday ? 'text-emerald-400 font-bold' : ''}">${day}</span>
+          ${hasWorkouts ? `
+            <span class="text-[9px] px-1 rounded-sm leading-tight font-mono ${
+              isSelected ? 'bg-slate-950/20 text-slate-900' : 'text-emerald-400 font-medium'
+            }">${totalDayKcal}k</span>
+          ` : `
+            <span class="w-1 h-1 rounded-full ${isSelected ? 'bg-slate-900' : 'bg-transparent'}"></span>
+          `}
+        `;
+
+        cell.addEventListener('click', () => {
+          changeDate(dateKey);
+        });
+
+        calendarDaysGrid.appendChild(cell);
+      }
+    }
+
+    // Render Stats
+    function updateStats() {
+      const currentList = getCurrentExercises();
+      const totalCalories = currentList.reduce((acc, cur) => acc + cur.calories, 0);
+      const totalMins = currentList.reduce((acc, cur) => acc + cur.duration, 0);
+
+      totalBurnedEl.textContent = totalCalories;
+      totalDurationEl.innerHTML = `${totalMins} <span class="text-xs text-slate-500">分鐘</span>`;
+      goalTargetText.textContent = profile.goal;
+
+      const pct = Math.min(100, Math.round((totalCalories / profile.goal) * 100)) || 0;
+      goalPercentText.textContent = `${pct}%`;
+      goalProgressBar.style.width = `${pct}%`;
+
+      itemCountBadge.textContent = `${currentList.length} 項`;
+      headerWeightDisplay.textContent = profile.weight;
+      updateDateHeader();
+    }
+
+    // Render List
+    function renderExerciseList() {
+      const currentList = getCurrentExercises();
+      if (currentList.length === 0) {
+        exerciseListEl.innerHTML = '';
+        emptyStateEl.classList.remove('hidden');
+        updateStats();
+        return;
+      }
+
+      emptyStateEl.classList.add('hidden');
+      exerciseListEl.innerHTML = currentList.map((item, idx) => {
+        let badgeColor = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+        let categoryIcon = 'fa-dumbbell';
+        if (item.category === 'core') {
+          badgeColor = 'bg-amber-500/10 text-amber-400 border-amber-500/30';
+          categoryIcon = 'fa-fire';
+        } else if (item.category === 'cardio') {
+          badgeColor = 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30';
+          categoryIcon = 'fa-person-running';
+        }
+
+        const hasSets = item.sets && item.reps;
+        const setSpecText = hasSets
+          ? `${item.sets} 組 × ${item.reps} 次 ${item.liftWeight > 0 ? `· ${item.liftWeight} kg` : '· 徒手'}`
+          : null;
+
+        return `
+          <div class="flex items-center justify-between p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl hover:border-slate-700 transition">
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-xl ${badgeColor} border flex items-center justify-center text-sm mt-0.5">
+                <i class="fa-solid ${categoryIcon}"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h4 class="font-bold text-sm text-white">${escapeHtml(item.name)}</h4>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded border ${badgeColor}">MET ${item.met}</span>
+                  ${setSpecText ? `
+                    <span class="text-[11px] px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 font-mono border border-emerald-500/20">
+                      ${setSpecText}
+                    </span>
+                  ` : ''}
+                </div>
+                <div class="text-xs text-slate-400 mt-1 flex flex-wrap items-center gap-2">
+                  <span><i class="fa-regular fa-clock text-slate-500"></i> ${item.duration} 分鐘</span>
+                  ${item.notes ? `<span class="text-slate-500">|</span> <span class="text-slate-300 text-[11px]">${escapeHtml(item.notes)}</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="text-right">
+                <span class="text-base font-extrabold text-emerald-400">+${item.calories}</span>
+                <span class="text-[10px] block text-slate-500">kcal</span>
+              </div>
+              <button onclick="removeExercise(${idx})" class="p-1.5 text-slate-500 hover:text-rose-400 transition" title="刪除">
+                <i class="fa-regular fa-trash-can text-sm"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateStats();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+
+    // Add Action
+    function addExercise() {
+      let name, met, duration, category, notes, sets = null, reps = null, liftWeight = 0;
+
+      if (activeTab === 'preset') {
+        const selectedOpt = presetSelect.options[presetSelect.selectedIndex];
+        name = selectedOpt.text.split(' - ')[0];
+        met = parseFloat(selectedOpt.dataset.met);
+        category = selectedOpt.dataset.type;
+
+        if (currentRecordMode === 'strength') {
+          sets = parseInt(inputSets.value) || 4;
+          reps = parseInt(inputReps.value) || 10;
+          liftWeight = parseFloat(inputLiftWeight.value) || 0;
+          duration = parseFloat(exerciseDuration.value) || 0;
+        } else {
+          duration = parseFloat(exercisePureDuration.value) || 0;
+        }
+        notes = exerciseNotes.value.trim();
+      } else {
+        name = customName.value.trim();
+        if (!name) {
+          alert('請輸入自訂動作名稱！');
+          customName.focus();
+          return;
+        }
+        met = parseFloat(customMet.value);
+        duration = parseFloat(customDuration.value) || 0;
+        category = customCategory.value;
+        if (customSets.value && customReps.value) {
+          sets = parseInt(customSets.value) || null;
+          reps = parseInt(customReps.value) || null;
+          liftWeight = parseFloat(customLiftWeight.value) || 0;
+        }
+        notes = customNotes.value.trim();
+      }
+
+      if (duration <= 0) {
+        alert('運動時間必須大於 0 分鐘！');
+        return;
+      }
+
+      const calories = calculateCalories(met, profile.weight, duration);
+      const newEntry = {
+        id: Date.now(),
+        name,
+        met,
+        duration,
+        category,
+        sets,
+        reps,
+        liftWeight,
+        notes,
+        calories,
+        createdAt: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })
+      };
+
+      if (!allRecords[selectedDate]) {
+        allRecords[selectedDate] = [];
+      }
+      allRecords[selectedDate].unshift(newEntry);
+      saveData();
+      renderExerciseList();
+      renderCalendarGrid();
+
+      // Reset notes
+      if (activeTab === 'preset') {
+        exerciseNotes.value = '';
+      } else {
+        customName.value = '';
+        customNotes.value = '';
+      }
+    }
+
+    window.removeExercise = function(idx) {
+      if (allRecords[selectedDate]) {
+        allRecords[selectedDate].splice(idx, 1);
+        if (allRecords[selectedDate].length === 0) {
+          delete allRecords[selectedDate];
+        }
+        saveData();
+        renderExerciseList();
+        renderCalendarGrid();
+      }
+    };
+
+    // Persistence
+    async function saveData() {
+      try {
+        if (window.sayoStorage) {
+          await window.sayoStorage.setItem('fitburn_profile', JSON.stringify(profile));
+          await window.sayoStorage.setItem('fitburn_records_by_date', JSON.stringify(allRecords));
+        } else {
+          localStorage.setItem('fitburn_profile', JSON.stringify(profile));
+          localStorage.setItem('fitburn_records_by_date', JSON.stringify(allRecords));
+        }
+      } catch (e) {
+        console.error('Storage save error', e);
+      }
+    }
+
+    async function loadData() {
+      try {
+        let pRaw, rRaw, legacyRaw;
+        if (window.sayoStorage) {
+          pRaw = await window.sayoStorage.getItem('fitburn_profile');
+          rRaw = await window.sayoStorage.getItem('fitburn_records_by_date');
+          legacyRaw = await window.sayoStorage.getItem('fitburn_exercises');
+        } else {
+          pRaw = localStorage.getItem('fitburn_profile');
+          rRaw = localStorage.getItem('fitburn_records_by_date');
+          legacyRaw = localStorage.getItem('fitburn_exercises');
+        }
+
+        if (pRaw) {
+          profile = Object.assign(profile, JSON.parse(pRaw));
+        }
+        if (rRaw) {
+          allRecords = JSON.parse(rRaw);
+        } else if (legacyRaw) {
+          // Backward compatibility: migrate single day list to today's date
+          const legacyList = JSON.parse(legacyRaw);
+          const todayStr = formatDateKey(new Date());
+          if (Array.isArray(legacyList) && legacyList.length > 0) {
+            allRecords[todayStr] = legacyList;
+          }
+        }
+      } catch (e) {
+        console.error('Storage load error', e);
+      }
+
+      // Populate Inputs
+      inputWeight.value = profile.weight;
+      inputHeight.value = profile.height;
+      inputAge.value = profile.age || 28;
+      inputGender.value = profile.gender || 'male';
+      inputActivity.value = profile.activity || 1.375;
+      inputBodyFat.value = profile.bodyFat || 23;
+      inputTargetWeight.value = profile.targetWeight || 68;
+      inputRate.value = profile.weeklyRate || 0.5;
+      inputGoal.value = profile.goal;
+      headerWeightDisplay.textContent = profile.weight;
+
+      updateGoalCalculations();
+      updateDateHeader();
+      updatePreview();
+      renderExerciseList();
+      renderCalendarGrid();
+    }
+
+    // Muscle Filter Chips Handling
+    muscleFilterChips.addEventListener('click', (e) => {
+      const chip = e.target.closest('.filter-chip');
+      if (!chip) return;
+      const group = chip.dataset.group;
+
+      // Update chip styles
+      document.querySelectorAll('.filter-chip').forEach(c => {
+        c.className = 'filter-chip px-2.5 py-1 text-xs rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent';
+      });
+      chip.className = 'filter-chip px-2.5 py-1 text-xs rounded-lg bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/40';
+
+      // Filter select optgroups
+      const optgroups = presetSelect.querySelectorAll('optgroup');
+      let firstAvailableOption = null;
+
+      optgroups.forEach(og => {
+        if (group === 'all' || og.dataset.group === group) {
+          og.style.display = '';
+          if (!firstAvailableOption) {
+            firstAvailableOption = og.querySelector('option');
+          }
+        } else {
+          og.style.display = 'none';
+        }
+      });
+
+      if (firstAvailableOption) {
+        presetSelect.value = firstAvailableOption.value;
+        const type = firstAvailableOption.dataset.type;
+        if (type === 'cardio') {
+          setRecordMode('duration');
+        } else {
+          setRecordMode('strength');
+          autoEstimateDurationFromSets();
+        }
+        updatePreview();
+      }
+    });
+
+    // Event Listeners
+    tabPreset.addEventListener('click', () => setTab('preset'));
+    tabCustom.addEventListener('click', () => setTab('custom'));
+
+    modeStrengthBtn.addEventListener('click', () => setRecordMode('strength'));
+    modeDurationBtn.addEventListener('click', () => setRecordMode('duration'));
+
+    // Steppers
+    setMinusBtn.addEventListener('click', () => {
+      const val = Math.max(1, (parseInt(inputSets.value) || 1) - 1);
+      inputSets.value = val;
+      autoEstimateDurationFromSets();
+    });
+    setPlusBtn.addEventListener('click', () => {
+      const val = Math.min(30, (parseInt(inputSets.value) || 1) + 1);
+      inputSets.value = val;
+      autoEstimateDurationFromSets();
+    });
+
+    repMinusBtn.addEventListener('click', () => {
+      inputReps.value = Math.max(1, (parseInt(inputReps.value) || 1) - 1);
+    });
+    repPlusBtn.addEventListener('click', () => {
+      inputReps.value = Math.min(100, (parseInt(inputReps.value) || 1) + 1);
+    });
+
+    weightMinusBtn.addEventListener('click', () => {
+      inputLiftWeight.value = Math.max(0, (parseFloat(inputLiftWeight.value) || 0) - 2.5);
+    });
+    weightPlusBtn.addEventListener('click', () => {
+      inputLiftWeight.value = Math.min(500, (parseFloat(inputLiftWeight.value) || 0) + 2.5);
+    });
+    btnBodyweight.addEventListener('click', () => {
+      inputLiftWeight.value = 0;
+    });
+
+    inputSets.addEventListener('input', autoEstimateDurationFromSets);
+    inputReps.addEventListener('input', updatePreview);
+    inputLiftWeight.addEventListener('input', updatePreview);
+
+    presetSelect.addEventListener('change', () => {
+      const selectedOpt = presetSelect.options[presetSelect.selectedIndex];
+      const type = selectedOpt.dataset.type;
+      // Auto-switch mode based on exercise type
+      if (type === 'cardio') {
+        setRecordMode('duration');
+      } else {
+        setRecordMode('strength');
+        autoEstimateDurationFromSets();
+      }
+      updatePreview();
+    });
+
+    exerciseDuration.addEventListener('input', updatePreview);
+    exercisePureDuration.addEventListener('input', updatePreview);
+    customMet.addEventListener('change', updatePreview);
+    customDuration.addEventListener('input', updatePreview);
+
+    prevDayBtn.addEventListener('click', () => stepDay(-1));
+    nextDayBtn.addEventListener('click', () => stepDay(1));
+    todayBtn.addEventListener('click', () => changeDate(formatDateKey(new Date())));
+
+    toggleCalendarBtn.addEventListener('click', () => {
+      const isHidden = calendarModal.classList.toggle('hidden');
+      toggleCalText.textContent = isHidden ? '展開日曆檢視' : '收起日曆檢視';
+      if (!isHidden) {
+        renderCalendarGrid();
+      }
+    });
+
+    calPrevMonth.addEventListener('click', () => {
+      calDisplayMonth--;
+      if (calDisplayMonth < 0) {
+        calDisplayMonth = 11;
+        calDisplayYear--;
+      }
+      renderCalendarGrid();
+    });
+
+    calNextMonth.addEventListener('click', () => {
+      calDisplayMonth++;
+      if (calDisplayMonth > 11) {
+        calDisplayMonth = 0;
+        calDisplayYear++;
+      }
+      renderCalendarGrid();
+    });
+
+    openProfileBtn.addEventListener('click', () => {
+      profileCard.classList.toggle('hidden');
+      updateGoalCalculations();
+    });
+    closeProfileBtn.addEventListener('click', () => {
+      profileCard.classList.add('hidden');
+    });
+
+    // Real-time calculation on input change
+    [inputWeight, inputHeight, inputAge, inputGender, inputActivity, inputBodyFat, inputTargetWeight, inputRate, inputGoal].forEach(el => {
+      el.addEventListener('input', updateGoalCalculations);
+      el.addEventListener('change', updateGoalCalculations);
+    });
+
+    applySuggestedGoalBtn.addEventListener('click', () => {
+      const w = parseFloat(inputWeight.value) || 75;
+      const targetW = parseFloat(inputTargetWeight.value) || 68;
+      const rate = parseFloat(inputRate.value) || 0.5;
+      const dailyDeficit = Math.round((rate * 7700) / 7);
+      // Half from exercise, half from diet
+      const suggestedBurn = Math.min(800, Math.max(250, Math.round(dailyDeficit * 0.7 / 50) * 50));
+      inputGoal.value = suggestedBurn;
+      updateGoalCalculations();
+      alert(`已將每日運動熱量目標設定為 ${suggestedBurn} kcal！記得點擊下方「儲存」按鈕套用。`);
+    });
+
+    saveProfileBtn.addEventListener('click', () => {
+      const w = parseFloat(inputWeight.value);
+      const h = parseFloat(inputHeight.value);
+      const g = parseFloat(inputGoal.value);
+
+      if (w > 0) profile.weight = w;
+      if (h > 0) profile.height = h;
+      if (g > 0) profile.goal = g;
+      profile.age = parseInt(inputAge.value) || 28;
+      profile.gender = inputGender.value;
+      profile.activity = parseFloat(inputActivity.value) || 1.375;
+      profile.bodyFat = parseFloat(inputBodyFat.value) || 23;
+      profile.targetWeight = parseFloat(inputTargetWeight.value) || 68;
+      profile.weeklyRate = parseFloat(inputRate.value) || 0.5;
+
+      // Recalculate all entries across all dates
+      Object.keys(allRecords).forEach(dKey => {
+        allRecords[dKey].forEach(item => {
+          item.calories = calculateCalories(item.met, profile.weight, item.duration);
+        });
+      });
+
+      saveData();
+      renderExerciseList();
+      renderCalendarGrid();
+      updatePreview();
+      profileCard.classList.add('hidden');
+    });
+
+    addExerciseBtn.addEventListener('click', addExercise);
+
+    clearAllBtn.addEventListener('click', () => {
+      const currentList = getCurrentExercises();
+      if (currentList.length === 0) return;
+      if (confirm(`確定要清空 ${selectedDate} 的所有運動紀錄嗎？`)) {
+        delete allRecords[selectedDate];
+        saveData();
+        renderExerciseList();
+        renderCalendarGrid();
+      }
+    });
+
+    // Initialize
+    loadData();
+  </script>
+</body>
+</html>
