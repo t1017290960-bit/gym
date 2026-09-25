@@ -24,10 +24,16 @@
       </div>
 
       <!-- User Profile Badge / Toggle -->
-      <button id="open-profile-btn" class="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 px-3 py-1.5 rounded-xl text-xs text-slate-300 transition">
-        <i class="fa-solid fa-user text-emerald-400"></i>
-        <span>體重：<strong id="header-weight-display" class="text-white">75</strong> kg</span>
-      </button>
+      <div class="flex items-center gap-1.5">
+        <button id="open-profile-btn" class="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 border border-emerald-500/50 hover:border-emerald-400 px-3 py-1.5 rounded-xl text-xs text-slate-300 transition shadow-sm group" title="點擊修改體重與個人設定">
+          <i class="fa-solid fa-weight-scale text-emerald-400 group-hover:scale-110 transition"></i>
+          <span>體重：<strong id="header-weight-display" class="text-white text-sm font-mono">75</strong> kg</span>
+          <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/30">修改</span>
+        </button>
+        <button id="quick-weight-btn" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 text-xs transition" title="快速輸入修改體重">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </button>
+      </div>
     </header>
 
     <!-- Date Navigation & Calendar Bar -->
@@ -53,6 +59,10 @@
 
       <div class="flex items-center gap-2 flex-wrap">
         <input type="date" id="native-date-picker" class="hidden">
+        <button id="toggle-profile-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-emerald-500/50 px-3 py-1.5 rounded-xl text-xs text-emerald-300 hover:text-white transition font-semibold">
+          <i class="fa-solid fa-weight-scale text-emerald-400"></i>
+          <span id="toggle-profile-text">修改體重與目標</span>
+        </button>
         <button id="toggle-calendar-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-xl text-xs text-slate-200 transition">
           <i class="fa-regular fa-calendar-days text-emerald-400"></i>
           <span id="toggle-cal-text">展開日曆檢視</span>
@@ -1535,7 +1545,10 @@
             <div>
               <div class="flex justify-between items-center mb-1">
                 <label class="text-[11px] font-medium text-slate-300">重量 (kg)</label>
-                <button type="button" id="btn-bodyweight" class="text-[10px] text-emerald-400 hover:underline">徒手</button>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" id="btn-use-bodyweight" class="text-[10px] text-cyan-400 hover:text-cyan-300 hover:underline" title="帶入自身體重">帶入體重(<span id="btn-bw-label">75</span>)</button>
+                  <button type="button" id="btn-bodyweight" class="text-[10px] text-emerald-400 hover:underline">徒手(0)</button>
+                </div>
               </div>
               <div class="flex items-center bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
                 <button type="button" id="weight-minus" class="px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-slate-700 text-xs">-</button>
@@ -1873,6 +1886,67 @@
     const emptyStateEl = document.getElementById('empty-state');
     const itemCountBadge = document.getElementById('item-count-badge');
     const clearAllBtn = document.getElementById('clear-all-btn');
+
+    const toggleProfileBtn = document.getElementById('toggle-profile-btn');
+    const toggleProfileText = document.getElementById('toggle-profile-text');
+    const quickWeightBtn = document.getElementById('quick-weight-btn');
+    const btnUseBodyweight = document.getElementById('btn-use-bodyweight');
+    const btnBwLabel = document.getElementById('btn-bw-label');
+
+    function updateWeightEverywhere(newWeight) {
+      const w = parseFloat(newWeight);
+      if (isNaN(w) || w <= 20 || w > 300) return;
+      profile.weight = w;
+      if (inputWeight) inputWeight.value = w;
+      if (headerWeightDisplay) headerWeightDisplay.textContent = w;
+      if (btnBwLabel) btnBwLabel.textContent = w;
+      if (typeof updateCalculations === 'function') updateCalculations();
+      if (typeof updateDashboard === 'function') updateDashboard();
+      if (typeof updatePreview === 'function') updatePreview();
+      if (window.sayoStorage) {
+        window.sayoStorage.setItem('fitburn_profile', JSON.stringify(profile));
+      }
+    }
+
+    function toggleProfileDrawer(forceOpen = null) {
+      if (!profileCard) return;
+      const shouldOpen = forceOpen !== null ? forceOpen : profileCard.classList.contains('hidden');
+      if (shouldOpen) {
+        profileCard.classList.remove('hidden');
+        if (toggleProfileText) toggleProfileText.textContent = '收起體態設定';
+        profileCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+          if (inputWeight) {
+            inputWeight.focus();
+            inputWeight.select();
+          }
+        }, 150);
+      } else {
+        profileCard.classList.add('hidden');
+        if (toggleProfileText) toggleProfileText.textContent = '修改體重與目標';
+      }
+    }
+
+    if (openProfileBtn) openProfileBtn.addEventListener('click', () => toggleProfileDrawer());
+    if (toggleProfileBtn) toggleProfileBtn.addEventListener('click', () => toggleProfileDrawer());
+    if (closeProfileBtn) closeProfileBtn.addEventListener('click', () => toggleProfileDrawer(false));
+    if (quickWeightBtn) {
+      quickWeightBtn.addEventListener('click', () => {
+        const val = prompt('請輸入最新體重 (kg)：', profile.weight);
+        if (val !== null && val.trim() !== '') {
+          updateWeightEverywhere(val);
+        }
+      });
+    }
+
+    if (btnUseBodyweight) {
+      btnUseBodyweight.addEventListener('click', () => {
+        if (inputLiftWeight) {
+          inputLiftWeight.value = profile.weight;
+          if (typeof updatePreview === 'function') updatePreview();
+        }
+      });
+    }
 
     const toggleExerciseBtn = document.getElementById('toggle-exercise-btn');
     const toggleExerciseText = document.getElementById('toggle-exercise-text');
