@@ -171,19 +171,25 @@
         </div>
       </div>
 
-      <!-- Target Goal Planning Inputs -->
+      <!-- Target Goal Planning Inputs: Target Body Fat % -->
       <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-white flex items-center gap-1.5">
-            <i class="fa-solid fa-flag-checkered text-emerald-400"></i> 目標體重與減重策略
+            <i class="fa-solid fa-flag-checkered text-emerald-400"></i> 目標體脂率與減脂策略
           </span>
-          <span class="text-[11px] text-slate-400">1 公斤脂肪約 7,700 kcal</span>
+          <span class="text-[11px] text-slate-400">以淨瘦體重推算 · 1kg脂肪約 7,700 kcal</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block text-[11px] text-slate-400 mb-1">目標體重 (kg)</label>
-            <input type="number" id="input-target-weight" value="68" min="35" max="200" step="0.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500">
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-[11px] text-slate-400">目標體脂率 (%)</label>
+              <span id="target-weight-calc-hint" class="text-[10px] text-emerald-400 font-mono">推估約 68.0 kg</span>
+            </div>
+            <div class="relative">
+              <input type="number" id="input-target-bodyfat" value="15" min="5" max="35" step="0.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500 pr-8">
+              <span class="absolute right-3 top-1.5 text-xs text-slate-400">%</span>
+            </div>
           </div>
           <div>
             <label class="block text-[11px] text-slate-400 mb-1">減重節奏速度</label>
@@ -195,40 +201,91 @@
           </div>
           <div>
             <label class="block text-[11px] text-slate-400 mb-1">每日運動消耗目標 (kcal)</label>
-            <input type="number" id="input-goal" value="400" min="50" max="3000" step="50" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-bold text-white focus:outline-none focus:border-emerald-500">
+            <input type="number" id="input-goal" value="600" min="50" max="3000" step="50" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-bold text-white focus:outline-none focus:border-emerald-500">
+          </div>
+        </div>
+
+        <!-- Quick Body Fat Presets -->
+        <div class="flex items-center gap-1.5 pt-1 text-[11px] text-slate-400">
+          <span class="shrink-0">腹肌目標推薦：</span>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" class="bf-preset-btn px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[10px]" data-bf="15">
+              15% (腹肌初現)
+            </button>
+            <button type="button" class="bf-preset-btn px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[10px]" data-bf="12">
+              12% (線條清晰)
+            </button>
+            <button type="button" class="bf-preset-btn px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[10px]" data-bf="10">
+              10% (極致腹肌)
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Real-time Calculated Projection Results -->
-      <div id="goal-calc-result" class="bg-gradient-to-r from-emerald-950/40 via-slate-800/60 to-teal-950/40 border border-emerald-500/30 rounded-xl p-3.5 space-y-2.5">
-        <div class="flex items-center justify-between text-xs pb-1.5 border-b border-slate-700/60">
-          <span class="text-slate-300 font-semibold"><i class="fa-solid fa-chart-pie text-emerald-400 mr-1"></i>代謝估算</span>
-          <span class="text-slate-400">基礎代謝 BMR: <strong id="res-bmr" class="text-white font-mono">1,680</strong> kcal · TDEE: <strong id="res-tdee" class="text-white font-mono">2,310</strong> kcal</span>
+      <!-- Real-time Calculated Projection Results (Integrated from Image 1 & Image 2) -->
+      <div id="goal-calc-result" class="bg-gradient-to-r from-emerald-950/40 via-slate-800/60 to-teal-950/40 border border-emerald-500/30 rounded-xl p-4 space-y-3">
+        <!-- Header -->
+        <div class="flex flex-wrap items-center justify-between text-xs pb-2 border-b border-slate-700/60 gap-2">
+          <span class="text-white font-bold flex items-center gap-1.5">
+            <span class="text-emerald-400">🌐</span> 代謝估算
+          </span>
+          <span class="text-slate-300 text-xs font-medium">
+            基礎代謝 BMR: <strong id="res-bmr" class="text-white font-mono">1,690</strong> kcal · TDEE: <strong id="res-tdee" class="text-white font-mono">2,324</strong> kcal
+          </span>
         </div>
 
+        <!-- 4-Metric Grid (From Image 1 & Image 2) -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-          <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-            <span class="text-[10px] text-slate-400 block">需調整體重</span>
-            <span id="res-delta-weight" class="text-sm font-extrabold text-amber-400">-7.0 kg</span>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">總需燃脂赤字</span>
+            <span id="res-total-deficit" class="text-sm font-extrabold text-white font-mono">53,900 kcal</span>
           </div>
-          <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-            <span class="text-[10px] text-slate-400 block">總燃脂熱量赤字</span>
-            <span id="res-total-deficit" class="text-sm font-extrabold text-white">53,900 kcal</span>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">累計已記錄燃脂</span>
+            <span id="res-accumulated-burned" class="text-sm font-extrabold text-emerald-400 font-mono">0 kcal</span>
           </div>
-          <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-            <span class="text-[10px] text-slate-400 block">預估達成週數</span>
-            <span id="res-weeks" class="text-sm font-extrabold text-emerald-400">約 14 週</span>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">尚餘熱量缺口</span>
+            <span id="res-remaining-deficit" class="text-sm font-extrabold text-amber-400 font-mono">53,900 kcal</span>
           </div>
-          <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-            <span class="text-[10px] text-slate-400 block">預計達成天數</span>
-            <span id="res-days" class="text-sm font-extrabold text-teal-300">98 天</span>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">即時推算達成天數</span>
+            <span id="res-days" class="text-sm font-extrabold text-teal-300 font-mono">約 64 天 (9.1 週)</span>
           </div>
         </div>
 
+        <!-- Realtime Target Date & Progress Bar (From Image 1) -->
+        <div class="space-y-1.5 bg-slate-950/70 p-2.5 rounded-xl border border-slate-800/80">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-slate-300 flex items-center gap-1.5">
+              <i class="fa-regular fa-calendar-check text-emerald-400"></i>
+              預計達成日期：<strong id="res-estimated-date" class="text-emerald-300 font-semibold font-mono">2026年11月28日</strong>
+            </span>
+            <span id="res-progress-pct" class="text-emerald-400 font-mono font-bold text-xs">0% 完成</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+            <div id="res-deficit-progress-bar" class="bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 h-2 rounded-full transition-all duration-500 w-0"></div>
+          </div>
+        </div>
+
+        <!-- Instant Target Rate Adjuster (From Image 1) -->
+        <div class="flex flex-wrap items-center justify-between gap-2.5 text-xs bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="text-slate-300">馬上試算每日運動赤字：</span>
+            <div class="flex items-center gap-1">
+              <input type="number" id="modal-calc-burn" value="600" min="100" max="2500" step="50" class="w-16 bg-slate-950 border border-slate-700 rounded-md px-2 py-0.5 text-white font-mono font-bold text-center focus:outline-none focus:border-emerald-400">
+              <span class="text-slate-400">kcal/天</span>
+            </div>
+          </div>
+          <div class="text-[11px] text-slate-400">
+            每日運動若達 <strong id="modal-burn-display" class="text-emerald-400 font-mono">600</strong> kcal，達成天數即刻動態更新！
+          </div>
+        </div>
+
+        <!-- Plan Tip & Apply Button (From Image 2) -->
         <div class="flex items-center justify-between text-[11px] text-slate-300 pt-1">
-          <span id="res-plan-tip">💡 建議每日攝取約 <strong>1,760 kcal</strong>，搭配每日運動燃脂 <strong>400 kcal</strong> 即可穩健達標！</span>
-          <button type="button" id="apply-suggested-goal-btn" class="text-emerald-400 hover:text-emerald-300 hover:underline shrink-0 ml-2">
+          <span id="res-plan-tip">💡 每日創造 <strong>850 kcal</strong> 熱量赤字 (例如飲食控制攝取約 <strong>1,774 kcal</strong> + 運動消耗 <strong>600 kcal</strong>)，預計 <strong>64 天 (9.1 週)</strong> 達成 68 kg！</span>
+          <button type="button" id="apply-suggested-goal-btn" class="text-emerald-400 hover:text-emerald-300 hover:underline shrink-0 ml-2 font-medium">
             套用為每日目標
           </button>
         </div>
@@ -535,9 +592,10 @@
       gender: 'male',
       activity: 1.375,
       bodyFat: 23,
+      targetBodyFat: 15,
       targetWeight: 68,
       weeklyRate: 0.5,
-      goal: 400
+      goal: 600
     };
     // Format: { 'YYYY-MM-DD': [ { id, name, met, duration, category, notes, calories, createdAt } ] }
     let allRecords = {};
@@ -559,17 +617,23 @@
     const inputGender = document.getElementById('input-gender');
     const inputActivity = document.getElementById('input-activity');
     const inputBodyFat = document.getElementById('input-bodyfat');
-    const inputTargetWeight = document.getElementById('input-target-weight');
+    const inputTargetBodyFat = document.getElementById('input-target-bodyfat');
+    const targetWeightCalcHint = document.getElementById('target-weight-calc-hint');
     const inputRate = document.getElementById('input-rate');
     const inputGoal = document.getElementById('input-goal');
 
     // Calculation result elements
     const resBmr = document.getElementById('res-bmr');
     const resTdee = document.getElementById('res-tdee');
-    const resDeltaWeight = document.getElementById('res-delta-weight');
     const resTotalDeficit = document.getElementById('res-total-deficit');
-    const resWeeks = document.getElementById('res-weeks');
+    const resAccumulatedBurned = document.getElementById('res-accumulated-burned');
+    const resRemainingDeficit = document.getElementById('res-remaining-deficit');
     const resDays = document.getElementById('res-days');
+    const resEstimatedDate = document.getElementById('res-estimated-date');
+    const resProgressPct = document.getElementById('res-progress-pct');
+    const resDeficitProgressBar = document.getElementById('res-deficit-progress-bar');
+    const modalCalcBurn = document.getElementById('modal-calc-burn');
+    const modalBurnDisplay = document.getElementById('modal-burn-display');
     const resPlanTip = document.getElementById('res-plan-tip');
     const applySuggestedGoalBtn = document.getElementById('apply-suggested-goal-btn');
 
@@ -639,15 +703,20 @@
     const itemCountBadge = document.getElementById('item-count-badge');
     const clearAllBtn = document.getElementById('clear-all-btn');
 
-    // Body & Target Weight Goal Calculations
+    // Body & Target Weight Goal Calculations (Synchronized)
     function updateGoalCalculations() {
       const w = parseFloat(inputWeight.value) || profile.weight;
       const h = parseFloat(inputHeight.value) || profile.height;
       const age = parseInt(inputAge.value) || profile.age;
       const gender = inputGender.value || profile.gender;
       const act = parseFloat(inputActivity.value) || profile.activity;
-      const targetW = parseFloat(inputTargetWeight.value) || profile.targetWeight;
-      const rate = parseFloat(inputRate.value) || profile.weeklyRate;
+      const currentBf = parseFloat(inputBodyFat.value) || profile.bodyFat || 23;
+      const targetBf = parseFloat(inputTargetBodyFat.value) || profile.targetBodyFat || 15;
+
+      // Lean Body Mass & Target Weight Formula
+      const lbm = w * (1 - currentBf / 100);
+      const targetW = +(lbm / (1 - targetBf / 100)).toFixed(1);
+      targetWeightCalcHint.textContent = `推估約 ${targetW} kg`;
 
       // Mifflin-St Jeor formula
       let bmr = Math.round(10 * w + 6.25 * h - 5 * age + (gender === 'male' ? 5 : -161));
@@ -656,45 +725,62 @@
       resBmr.textContent = bmr.toLocaleString();
       resTdee.textContent = tdee.toLocaleString();
 
-      const delta = +(targetW - w).toFixed(1);
-      const isWeightLoss = delta < 0;
-      const absDelta = Math.abs(delta);
+      const deltaFat = Math.max(0, +(w - targetW).toFixed(1));
 
-      if (delta === 0) {
-        resDeltaWeight.textContent = '維持目前體重';
-        resDeltaWeight.className = 'text-sm font-extrabold text-emerald-400';
-        resTotalDeficit.textContent = '0 kcal';
-        resWeeks.textContent = '已達成';
-        resDays.textContent = '維持期';
-        resPlanTip.innerHTML = `💡 建議每日攝取平衡熱量 <strong>${tdee.toLocaleString()} kcal</strong>，並維持定期訓練維持體態與線條！`;
-      } else if (isWeightLoss) {
-        // Weight loss: approx 7700 kcal deficit per 1kg fat
-        const totalDeficit = Math.round(absDelta * 7700);
-        const dailyDeficit = Math.round((rate * 7700) / 7);
-        const weeksNeeded = +(absDelta / rate).toFixed(1);
-        const daysNeeded = Math.round(weeksNeeded * 7);
+      // Total Deficit
+      const totalDeficitKcal = Math.round(deltaFat * 7700);
+      resTotalDeficit.textContent = `${totalDeficitKcal.toLocaleString()} kcal`;
 
-        resDeltaWeight.textContent = `減重 -${absDelta} kg`;
-        resDeltaWeight.className = 'text-sm font-extrabold text-amber-400';
-        resTotalDeficit.textContent = `${totalDeficit.toLocaleString()} kcal`;
-        resWeeks.textContent = `約 ${weeksNeeded} 週`;
-        resDays.textContent = `${daysNeeded} 天`;
+      // Accumulated burned from all logged exercises
+      let totalAllBurned = 0;
+      Object.keys(allRecords).forEach(k => {
+        if (Array.isArray(allRecords[k])) {
+          totalAllBurned += allRecords[k].reduce((s, it) => s + (it.calories || 0), 0);
+        }
+      });
+      resAccumulatedBurned.textContent = `${totalAllBurned.toLocaleString()} kcal`;
 
-        const targetIntake = Math.max(1200, tdee - dailyDeficit);
-        resPlanTip.innerHTML = `💡 每日創造 <strong>${dailyDeficit} kcal</strong> 熱量赤字 (例如飲食控制攝取約 <strong>${targetIntake.toLocaleString()} kcal</strong> + 運動消耗 <strong>${inputGoal.value} kcal</strong>)，預計 <strong>${daysNeeded} 天 (${weeksNeeded} 週)</strong> 達成 ${targetW} kg！`;
+      // Remaining
+      const remainingDeficit = Math.max(0, totalDeficitKcal - totalAllBurned);
+      resRemainingDeficit.textContent = `${remainingDeficit.toLocaleString()} kcal`;
+
+      // Progress bar
+      const progressPct = totalDeficitKcal > 0
+        ? Math.min(100, +((totalAllBurned / totalDeficitKcal) * 100).toFixed(1))
+        : 100;
+      resProgressPct.textContent = `${progressPct}% 完成`;
+      resDeficitProgressBar.style.width = `${progressPct}%`;
+
+      // Daily burn rate from modal adjuster
+      const dailyBurnInput = parseFloat(modalCalcBurn.value) || 600;
+      modalBurnDisplay.textContent = dailyBurnInput;
+
+      // Effective daily deficit: diet deficit ~250 kcal + exercise burn
+      const dietDeficit = 250;
+      const totalDailyDeficit = dailyBurnInput + dietDeficit;
+      const targetIntake = Math.max(1200, tdee - dietDeficit);
+
+      const remainingDays = remainingDeficit > 0
+        ? Math.max(1, Math.ceil(remainingDeficit / totalDailyDeficit))
+        : 0;
+
+      if (remainingDeficit === 0) {
+        resDays.textContent = '已達標 🎉';
+        resEstimatedDate.textContent = '恭喜達成目標！';
       } else {
-        // Muscle Gain / Weight Gain
-        const totalSurplus = Math.round(absDelta * 5000);
-        const weeksNeeded = +(absDelta / (rate * 0.6)).toFixed(1);
-        const daysNeeded = Math.round(weeksNeeded * 7);
+        const remainingWeeks = +(remainingDays / 7).toFixed(1);
+        resDays.textContent = `約 ${remainingDays} 天 (${remainingWeeks} 週)`;
 
-        resDeltaWeight.textContent = `增肌增重 +${absDelta} kg`;
-        resDeltaWeight.className = 'text-sm font-extrabold text-cyan-400';
-        resTotalDeficit.textContent = `+${totalSurplus.toLocaleString()} kcal`;
-        resWeeks.textContent = `約 ${weeksNeeded} 週`;
-        resDays.textContent = `${daysNeeded} 天`;
-        resPlanTip.innerHTML = `💡 增肌建議維持每日熱量微盈餘 (約 <strong>${(tdee + 300).toLocaleString()} kcal</strong>)，並專注漸進式重訓與高蛋白質攝取！`;
+        // Calculate exact target date
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + remainingDays);
+        const y = targetDate.getFullYear();
+        const m = String(targetDate.getMonth() + 1).padStart(2, '0');
+        const d = String(targetDate.getDate()).padStart(2, '0');
+        resEstimatedDate.textContent = `${y}年${m}月${d}日`;
       }
+
+      resPlanTip.innerHTML = `💡 每日創造 <strong>${totalDailyDeficit} kcal</strong> 熱量赤字 (例如飲食控制攝取約 <strong>${targetIntake.toLocaleString()} kcal</strong> + 運動消耗 <strong>${dailyBurnInput} kcal</strong>)，預計 <strong>${remainingDays} 天</strong> (${(remainingDays / 7).toFixed(1)} 週) 達成體脂 <strong>${targetBf}%</strong> (約 ${targetW} kg)！`;
     }
 
     // Formula: MET * 3.5 * weight(kg) / 200 * duration(mins)
@@ -895,6 +981,7 @@
       itemCountBadge.textContent = `${currentList.length} 項`;
       headerWeightDisplay.textContent = profile.weight;
       updateDateHeader();
+      updateGoalCalculations();
     }
 
     // Render List
@@ -1105,7 +1192,7 @@
       inputGender.value = profile.gender || 'male';
       inputActivity.value = profile.activity || 1.375;
       inputBodyFat.value = profile.bodyFat || 23;
-      inputTargetWeight.value = profile.targetWeight || 68;
+      inputTargetBodyFat.value = profile.targetBodyFat || 15;
       inputRate.value = profile.weeklyRate || 0.5;
       inputGoal.value = profile.goal;
       headerWeightDisplay.textContent = profile.weight;
@@ -1215,6 +1302,10 @@
     customMet.addEventListener('change', updatePreview);
     customDuration.addEventListener('input', updatePreview);
 
+    modalCalcBurn.addEventListener('input', () => {
+      updateGoalCalculations();
+    });
+
     prevDayBtn.addEventListener('click', () => stepDay(-1));
     nextDayBtn.addEventListener('click', () => stepDay(1));
     todayBtn.addEventListener('click', () => changeDate(formatDateKey(new Date())));
@@ -1254,14 +1345,25 @@
     });
 
     // Real-time calculation on input change
-    [inputWeight, inputHeight, inputAge, inputGender, inputActivity, inputBodyFat, inputTargetWeight, inputRate, inputGoal].forEach(el => {
-      el.addEventListener('input', updateGoalCalculations);
-      el.addEventListener('change', updateGoalCalculations);
+    [inputWeight, inputHeight, inputAge, inputGender, inputActivity, inputBodyFat, inputTargetBodyFat, inputRate, inputGoal].forEach(el => {
+      el.addEventListener('input', () => {
+        updateGoalCalculations();
+      });
+      el.addEventListener('change', () => {
+        updateGoalCalculations();
+      });
+    });
+
+    // Body Fat Presets
+    document.querySelectorAll('.bf-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        inputTargetBodyFat.value = btn.dataset.bf;
+        updateGoalCalculations();
+      });
     });
 
     applySuggestedGoalBtn.addEventListener('click', () => {
       const w = parseFloat(inputWeight.value) || 75;
-      const targetW = parseFloat(inputTargetWeight.value) || 68;
       const rate = parseFloat(inputRate.value) || 0.5;
       const dailyDeficit = Math.round((rate * 7700) / 7);
       // Half from exercise, half from diet
@@ -1283,7 +1385,7 @@
       profile.gender = inputGender.value;
       profile.activity = parseFloat(inputActivity.value) || 1.375;
       profile.bodyFat = parseFloat(inputBodyFat.value) || 23;
-      profile.targetWeight = parseFloat(inputTargetWeight.value) || 68;
+      profile.targetBodyFat = parseFloat(inputTargetBodyFat.value) || 15;
       profile.weeklyRate = parseFloat(inputRate.value) || 0.5;
 
       // Recalculate all entries across all dates
