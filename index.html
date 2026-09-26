@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FitBurn - 健身運動熱量計算器</title>
+  <script type="application/json" id="sayo-db-schema">
+  { "collections": [ { "name": "dailySummaries", "label": "睡眠與赤字摘要", "fields": ["id", "authorUserId", "days", "updatedAt"] } ] }
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.css" crossorigin="anonymous">
@@ -1429,6 +1432,13 @@
               近 30 天
             </button>
           </div>
+          <div class="flex flex-col items-end gap-1">
+            <button type="button" id="cloud-sync-btn" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold transition flex items-center gap-1.5">
+              <i class="fa-solid fa-cloud-arrow-up"></i> 同步跨裝置紀錄
+            </button>
+            <span id="cloud-sync-status" class="text-[10px] text-slate-400 text-right">載入跨裝置紀錄中…</span>
+            <span class="text-[9px] text-amber-300/80 text-right">健康紀錄請使用個人資料模式，避免與他人共用</span>
+          </div>
         </div>
 
         <!-- 3 Trend Key Stat Badges -->
@@ -2484,6 +2494,7 @@
     let allRecords = {};
     let foodRecords = {};
     let sleepRecords = {};
+    let cloudDailySummaries = {};
     let selectedDate = formatDateKey(new Date());
     let calDisplayYear = new Date().getFullYear();
     let calDisplayMonth = new Date().getMonth();
@@ -3455,6 +3466,8 @@
     const sleepCortisolStatus = document.getElementById('sleep-cortisol-status');
     const sleepLeptinStatus = document.getElementById('sleep-leptin-status');
     const saveSleepRecordBtn = document.getElementById('save-sleep-record-btn');
+    const cloudSyncBtn = document.getElementById('cloud-sync-btn');
+    const cloudSyncStatus = document.getElementById('cloud-sync-status');
 
     let currentSleepQuality = 'great';
 
@@ -4196,18 +4209,32 @@
         const dateKey = formatDateKey(d);
         const dayMonthLabel = `${d.getMonth() + 1}/${d.getDate()}`;
 
+        const cloudRecord = cloudDailySummaries[dateKey];
+        const hasLocalExercise = Object.prototype.hasOwnProperty.call(allRecords, dateKey);
+        const hasLocalSleep = Object.prototype.hasOwnProperty.call(sleepRecords, dateKey);
+        const hasLocalFood = Object.prototype.hasOwnProperty.call(foodRecords, dateKey);
         const exList = allRecords[dateKey] || [];
-        const exBurn = exList.reduce((s, it) => s + (it.calories || 0), 0);
+        const exBurn = hasLocalExercise
+          ? exList.reduce((s, it) => s + (Number(it.calories) || 0), 0)
+          : (Number(cloudRecord?.exerciseBurn) || 0);
+        const sleepRecord = sleepRecords[dateKey];
+        const sleepBurn = hasLocalSleep
+          ? (Number(sleepRecord?.burn) || 0)
+          : (Number(cloudRecord?.burn) || 0);
 
         const foodList = foodRecords[dateKey] || [];
-        const foodIn = foodList.reduce((s, it) => s + (it.calories || 0), 0);
+        const foodIn = hasLocalFood
+          ? foodList.reduce((s, it) => s + (Number(it.calories) || 0), 0)
+          : (Number(cloudRecord?.foodIn) || 0);
 
         let deficit = 0;
-        let hasFoodLog = foodList.length > 0;
-        if (hasFoodLog) {
-          deficit = (bmr + exBurn) - foodIn;
-        } else if (exBurn > 0) {
-          deficit = exBurn; // 僅記錄運動消耗時作為運動赤字基準
+        const hasFoodLog = hasLocalFood ? foodList.length > 0 : foodIn > 0;
+        if (cloudRecord && !hasLocalExercise && !hasLocalSleep && !hasLocalFood) {
+          deficit = Number(cloudRecord.deficit) || 0;
+        } else if (hasFoodLog) {
+          deficit = (bmr + exBurn) - foodIn - sleepBurn;
+        } else if (exBurn > 0 || sleepBurn > 0) {
+          deficit = exBurn - sleepBurn;
         } else {
           deficit = 0;
         }
@@ -4219,6 +4246,7 @@
           dayOfWeek: ['日','一','二','三','四','五','六'][d.getDay()],
           bmr,
           exBurn,
+          sleepBurn,
           foodIn,
           hasFoodLog,
           deficit,
@@ -4390,6 +4418,10 @@
                 <strong class="${data.deficit >= 0 ? 'text-teal-300' : 'text-rose-400'}">${data.deficit > 0 ? '+' : ''}${data.deficit} kcal</strong>
               </div>
               <div class="flex justify-between gap-3 text-slate-400">
+                <span>🌙 睡眠燃脂：</span>
+                <span class="text-indigo-300">${data.sleepBurn} kcal</span>
+              </div>
+              <div class="flex justify-between gap-3 text-slate-400">
                 <span>🧈 純燃脂：</span>
                 <span class="text-emerald-400 font-bold">${data.fatGrams} g 脂肪</span>
               </div>
@@ -4399,7 +4431,7 @@
               </div>
               <div class="flex justify-between gap-3 text-slate-500 text-[10px] pt-0.5 border-t border-slate-800">
                 <span>消耗/攝取：</span>
-                <span>${data.bmr + data.exBurn} / ${data.foodIn} kcal</span>
+                <span>${data.bmr + data.exBurn + data.sleepBurn} / ${data.foodIn} kcal</span>
               </div>
             </div>
           `;
@@ -5200,6 +5232,139 @@
       }
     }
 
+    function normalizeCloudDays(snapshot) {
+      const days = {};
+      const source = snapshot && snapshot.days;
+      if (!source || typeof source !== 'object' || Array.isArray(source)) return days;
+      Object.entries(source).forEach(([date, item]) => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !item || typeof item !== 'object') return;
+        days[date] = {
+          date,
+          hours: Number(item.hours) || 0,
+          quality: ['great', 'normal', 'poor'].includes(item.quality) ? item.quality : '',
+          burn: Number(item.burn) || 0,
+          exerciseBurn: Number(item.exerciseBurn) || 0,
+          foodIn: Number(item.foodIn) || 0,
+          bmr: Number(item.bmr) || 0,
+          deficit: Number(item.deficit) || 0
+        };
+      });
+      return days;
+    }
+
+    function buildLocalDailySummary(dateKey) {
+      const hasExercise = Object.prototype.hasOwnProperty.call(allRecords, dateKey);
+      const hasFood = Object.prototype.hasOwnProperty.call(foodRecords, dateKey);
+      const hasSleep = Object.prototype.hasOwnProperty.call(sleepRecords, dateKey);
+      if (!hasExercise && !hasFood && !hasSleep) return null;
+      const exerciseList = Array.isArray(allRecords[dateKey]) ? allRecords[dateKey] : [];
+      const foodList = Array.isArray(foodRecords[dateKey]) ? foodRecords[dateKey] : [];
+      const sleep = sleepRecords[dateKey] || {};
+      const exerciseBurn = exerciseList.reduce((sum, item) => sum + (Number(item.calories) || 0), 0);
+      const foodIn = foodList.reduce((sum, item) => sum + (Number(item.calories) || 0), 0);
+      const burn = Number(sleep.burn) || 0;
+      const bmr = getCalculatedBmr();
+      let deficit = 0;
+      if (foodList.length > 0) deficit = bmr + exerciseBurn - foodIn - burn;
+      else if (exerciseBurn > 0 || burn > 0) deficit = exerciseBurn - burn;
+      return {
+        date: dateKey,
+        hours: Number(sleep.hours) || 0,
+        quality: ['great', 'normal', 'poor'].includes(sleep.quality) ? sleep.quality : '',
+        burn, exerciseBurn, foodIn, bmr, deficit
+      };
+    }
+
+    async function loadCloudSummaries() {
+      if (!window.sayoDb) {
+        if (cloudSyncStatus) cloudSyncStatus.textContent = '跨裝置同步目前無法使用';
+        return;
+      }
+      try {
+        const userId = await window.sayoDb.getUserId();
+        const snapshots = await window.sayoDb.getAll('dailySummaries');
+        const ownSnapshots = (Array.isArray(snapshots) ? snapshots : [])
+          .filter(item => item && item.authorUserId === userId)
+          .sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+        cloudDailySummaries = ownSnapshots.length ? normalizeCloudDays(ownSnapshots[0]) : {};
+        if (cloudSyncStatus) {
+          const count = Object.keys(cloudDailySummaries).length;
+          cloudSyncStatus.textContent = count ? `已載入跨裝置紀錄 · ${count} 天` : '尚無跨裝置備份，可按鈕同步本機紀錄';
+        }
+      } catch (error) {
+        console.error('跨裝置紀錄載入失敗', error);
+        if (cloudSyncStatus) cloudSyncStatus.textContent = '載入失敗，請按同步重試';
+      }
+    }
+
+    async function syncCloudSummaries() {
+      if (!window.sayoDb) {
+        if (cloudSyncStatus) cloudSyncStatus.textContent = '跨裝置同步目前無法使用';
+        return;
+      }
+      if (cloudSyncBtn) cloudSyncBtn.disabled = true;
+      if (cloudSyncStatus) cloudSyncStatus.textContent = '同步中…';
+      try {
+        const userId = await window.sayoDb.getUserId();
+        const snapshots = await window.sayoDb.getAll('dailySummaries');
+        const ownSnapshots = (Array.isArray(snapshots) ? snapshots : [])
+          .filter(item => item && item.authorUserId === userId)
+          .sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+        const mergedDays = ownSnapshots.length ? normalizeCloudDays(ownSnapshots[0]) : {};
+        const localDates = new Set([
+          ...Object.keys(allRecords),
+          ...Object.keys(foodRecords),
+          ...Object.keys(sleepRecords)
+        ]);
+        let changed = 0;
+        localDates.forEach(date => {
+          const summary = buildLocalDailySummary(date);
+          if (!summary) return;
+          const previous = mergedDays[date];
+          const fields = ['hours', 'quality', 'burn', 'exerciseBurn', 'foodIn', 'bmr', 'deficit'];
+          if (!previous || fields.some(field => previous[field] !== summary[field])) {
+            mergedDays[date] = summary;
+            changed++;
+          }
+        });
+
+        const dayCount = Object.keys(mergedDays).length;
+        if (!dayCount) {
+          cloudDailySummaries = {};
+          if (cloudSyncStatus) cloudSyncStatus.textContent = '尚無可同步的睡眠或赤字紀錄';
+          return;
+        }
+        if (changed > 0) {
+          const result = await window.sayoDb.append('dailySummaries', {
+            id: `fitburn-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            authorUserId: userId,
+            days: mergedDays,
+            updatedAt: new Date().toISOString()
+          });
+          if (!result || !result.ok) {
+            const messages = {
+              'too-large': '紀錄資料量過大，請稍後再試。',
+              'too-many-items': '儲存空間項目已滿。',
+              'quota-exceeded': '儲存空間已滿。',
+              'rate-limited': '同步太頻繁，請稍候再試。',
+              'stale-replace': '同步未完成，請重新載入後再試。'
+            };
+            if (cloudSyncStatus) cloudSyncStatus.textContent = messages[result && result.code] || '同步失敗，請稍後再試。';
+            return;
+          }
+        }
+        cloudDailySummaries = mergedDays;
+        if (cloudSyncStatus) cloudSyncStatus.textContent = `同步完成 · ${dayCount} 天，可在其他裝置查看`;
+        renderSleepUI();
+        renderDeficitTrendChart();
+      } catch (error) {
+        console.error('跨裝置紀錄同步失敗', error);
+        if (cloudSyncStatus) cloudSyncStatus.textContent = '同步失敗，請檢查連線後重試';
+      } finally {
+        if (cloudSyncBtn) cloudSyncBtn.disabled = false;
+      }
+    }
+
     async function loadData() {
       try {
         let pRaw, rRaw, fRaw, sRaw, legacyRaw;
@@ -5239,6 +5404,7 @@
         console.error('Storage load error', e);
       }
 
+      await loadCloudSummaries();
       inputWeight.value = profile.weight;
       inputHeight.value = profile.height;
       inputAge.value = profile.age || 28;
@@ -5475,9 +5641,11 @@
     }
 
     function renderSleepUI() {
-      const record = sleepRecords[selectedDate] || { hours: 7.5, quality: 'great' };
+      const localRecord = sleepRecords[selectedDate];
+      const cloudRecord = cloudDailySummaries[selectedDate];
+      const record = localRecord || (cloudRecord && cloudRecord.hours > 0 ? cloudRecord : { hours: 7.5, quality: 'great' });
       inputSleepHours.value = record.hours || 7.5;
-      currentSleepQuality = record.quality || 'great';
+      currentSleepQuality = ['great', 'normal', 'poor'].includes(record.quality) ? record.quality : 'great';
 
       document.querySelectorAll('.sleep-q-btn').forEach(btn => {
         if (btn.dataset.quality === currentSleepQuality) {
@@ -5488,6 +5656,9 @@
       });
 
       calculateSleepMetrics();
+      if (!localRecord && cloudRecord && Number(cloudRecord.burn) > 0) {
+        sleepBurnKcal.textContent = Number(cloudRecord.burn).toLocaleString();
+      }
     }
 
     function toggleSleepModal(forceOpen = false) {
@@ -5545,12 +5716,16 @@
       calculateSleepMetrics();
     });
 
-    saveSleepRecordBtn.addEventListener('click', () => {
+    saveSleepRecordBtn.addEventListener('click', async () => {
       const data = calculateSleepMetrics();
       sleepRecords[selectedDate] = data;
-      saveData();
-      alert(`已儲存 ${selectedDate} 的睡眠紀錄！夜間預估燃脂 ${data.burn} kcal，生長激素修復 ${data.ghScore} 分！`);
+      await saveData();
+      renderDeficitTrendChart();
+      await syncCloudSummaries();
+      alert(`已儲存 ${selectedDate} 的睡眠紀錄！夜間預估燃脂 ${data.burn} kcal，區間平均每日赤字已更新，生長激素修復 ${data.ghScore} 分！`);
     });
+
+    if (cloudSyncBtn) cloudSyncBtn.addEventListener('click', syncCloudSummaries);
 
     window.loadRoutine = function(type) {
       if (type === 'A') {
