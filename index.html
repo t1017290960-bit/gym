@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FitBurn - 健身運動熱量計算器</title>
   <script type="application/json" id="sayo-db-schema">
-  { "collections": [ { "name": "dailySummaries", "label": "睡眠與赤字摘要", "fields": ["id", "authorUserId", "days", "updatedAt"] } ] }
+  { "collections": [ { "name": "dailySummaries", "label": "睡眠與赤字摘要", "fields": ["id", "authorUserId", "days", "updatedAt"] }, { "name": "accountProfiles", "label": "FitBurn 個人資料卡", "fields": ["id", "authorUserId", "displayName", "goalNote", "updatedAt"] } ] }
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -36,8 +36,39 @@
         <button id="quick-weight-btn" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 text-xs transition" title="快速輸入修改體重">
           <i class="fa-solid fa-pen-to-square"></i>
         </button>
+        <button type="button" id="account-profile-btn" class="px-2.5 py-2 rounded-xl bg-indigo-950/70 hover:bg-indigo-900 border border-indigo-500/40 text-indigo-200 text-xs font-semibold transition" title="建立或修改 FitBurn 個人資料卡">
+          <i class="fa-solid fa-user-circle mr-1"></i><span id="account-profile-label">個人資料</span>
+        </button>
       </div>
     </header>
+
+    <section id="account-profile-panel" class="hidden bg-slate-900 border border-indigo-500/40 rounded-2xl p-5 space-y-3 shadow-xl">
+      <div class="flex items-start justify-between gap-3 border-b border-slate-800 pb-3">
+        <div>
+          <h2 class="text-sm font-bold text-white"><i class="fa-solid fa-id-card text-indigo-300 mr-1.5"></i>FitBurn 個人資料卡</h2>
+          <p class="text-[11px] text-slate-400 mt-1">可保存顯示名稱與健身目標備註，並同步到同一平台帳戶的其他裝置。</p>
+        </div>
+        <button type="button" id="close-account-profile-btn" class="text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800 text-xs">收起</button>
+      </div>
+      <p class="text-[11px] text-amber-200/90 bg-amber-950/30 border border-amber-500/20 rounded-lg p-2">這不是新建登入帳號：請使用平台提供的登入；此頁不收集或保存密碼。跨裝置同步請登入同一平台帳戶，並選擇個人資料模式。</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label for="account-display-name" class="block text-[11px] text-slate-300 mb-1">顯示名稱</label>
+          <input id="account-display-name" maxlength="50" type="text" placeholder="例如：FitBurn 使用者" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-400">
+        </div>
+        <div>
+          <label for="account-goal-note" class="block text-[11px] text-slate-300 mb-1">健身目標備註（選填）</label>
+          <input id="account-goal-note" maxlength="240" type="text" placeholder="例如：穩定減脂並維持力量" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-400">
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <span id="account-profile-status" class="text-[11px] text-slate-400">資料只保存名稱與目標備註；不填寫密碼或敏感登入資料。</span>
+        <div class="flex items-center gap-2">
+          <button type="button" id="load-account-profile-btn" class="px-3 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-100 text-xs font-semibold disabled:opacity-50"><i class="fa-solid fa-cloud-arrow-down mr-1"></i>重新載入雲端資料</button>
+          <button type="button" id="save-account-profile-btn" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold disabled:opacity-50"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>儲存並同步個人資料</button>
+        </div>
+      </div>
+    </section>
 
     <!-- Date Navigation & Calendar Bar -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-md">
@@ -2495,6 +2526,7 @@
     let foodRecords = {};
     let sleepRecords = {};
     let cloudDailySummaries = {};
+    let accountProfile = { displayName: '', goalNote: '', updatedAt: '' };
     let selectedDate = formatDateKey(new Date());
     let calDisplayYear = new Date().getFullYear();
     let calDisplayMonth = new Date().getMonth();
@@ -3468,6 +3500,14 @@
     const saveSleepRecordBtn = document.getElementById('save-sleep-record-btn');
     const cloudSyncBtn = document.getElementById('cloud-sync-btn');
     const cloudSyncStatus = document.getElementById('cloud-sync-status');
+    const accountProfileBtn = document.getElementById('account-profile-btn');
+    const accountProfilePanel = document.getElementById('account-profile-panel');
+    const accountProfileLabel = document.getElementById('account-profile-label');
+    const accountDisplayNameInput = document.getElementById('account-display-name');
+    const accountGoalNoteInput = document.getElementById('account-goal-note');
+    const accountProfileStatus = document.getElementById('account-profile-status');
+    const loadAccountProfileBtn = document.getElementById('load-account-profile-btn');
+    const saveAccountProfileBtn = document.getElementById('save-account-profile-btn');
 
     let currentSleepQuality = 'great';
 
@@ -5275,6 +5315,40 @@
       };
     }
 
+    function renderAccountProfile() {
+      if (accountDisplayNameInput) accountDisplayNameInput.value = accountProfile.displayName || '';
+      if (accountGoalNoteInput) accountGoalNoteInput.value = accountProfile.goalNote || '';
+      if (accountProfileLabel) accountProfileLabel.textContent = accountProfile.displayName || '個人資料';
+    }
+
+    async function loadCloudAccountProfile() {
+      if (!window.sayoDb) return;
+      try {
+        const userId = await window.sayoDb.getUserId();
+        const entries = await window.sayoDb.getAll('accountProfiles');
+        const ownEntries = (Array.isArray(entries) ? entries : [])
+          .filter(item => item && item.authorUserId === userId)
+          .sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+        const latest = ownEntries[0];
+        if (latest && String(latest.updatedAt || '') > String(accountProfile.updatedAt || '')) {
+          accountProfile = {
+            displayName: String(latest.displayName || '').slice(0, 50),
+            goalNote: String(latest.goalNote || '').slice(0, 240),
+            updatedAt: String(latest.updatedAt || '')
+          };
+          if (window.sayoStorage) await window.sayoStorage.setItem('fitburn_account_profile', JSON.stringify(accountProfile));
+          else localStorage.setItem('fitburn_account_profile', JSON.stringify(accountProfile));
+        }
+        renderAccountProfile();
+        if (accountProfileStatus) accountProfileStatus.textContent = latest
+          ? '雲端個人資料已檢查；此裝置顯示最新資料。'
+          : '雲端尚無個人資料；填寫後儲存即可同步到其他裝置。';
+      } catch (error) {
+        console.error('個人資料載入失敗', error);
+        if (accountProfileStatus) accountProfileStatus.textContent = '雲端載入失敗；請確認已登入同一平台帳戶並檢查連線，本機資料仍保留。';
+      }
+    }
+
     async function loadCloudSummaries() {
       if (!window.sayoDb) {
         if (cloudSyncStatus) cloudSyncStatus.textContent = '跨裝置同步目前無法使用';
@@ -5367,19 +5441,21 @@
 
     async function loadData() {
       try {
-        let pRaw, rRaw, fRaw, sRaw, legacyRaw;
+        let pRaw, rRaw, fRaw, sRaw, legacyRaw, accountRaw;
         if (window.sayoStorage) {
           pRaw = await window.sayoStorage.getItem('fitburn_profile');
           rRaw = await window.sayoStorage.getItem('fitburn_records_by_date');
           fRaw = await window.sayoStorage.getItem('fitburn_food_records_by_date');
           sRaw = await window.sayoStorage.getItem('fitburn_sleep_records_by_date');
           legacyRaw = await window.sayoStorage.getItem('fitburn_exercises');
+          accountRaw = await window.sayoStorage.getItem('fitburn_account_profile');
         } else {
           pRaw = localStorage.getItem('fitburn_profile');
           rRaw = localStorage.getItem('fitburn_records_by_date');
           fRaw = localStorage.getItem('fitburn_food_records_by_date');
           sRaw = localStorage.getItem('fitburn_sleep_records_by_date');
           legacyRaw = localStorage.getItem('fitburn_exercises');
+          accountRaw = localStorage.getItem('fitburn_account_profile');
         }
 
         if (pRaw) {
@@ -5400,11 +5476,21 @@
         if (sRaw) {
           sleepRecords = JSON.parse(sRaw);
         }
+        if (accountRaw) {
+          const savedAccount = JSON.parse(accountRaw);
+          accountProfile = {
+            displayName: String(savedAccount.displayName || '').slice(0, 50),
+            goalNote: String(savedAccount.goalNote || '').slice(0, 240),
+            updatedAt: String(savedAccount.updatedAt || '')
+          };
+        }
       } catch (e) {
         console.error('Storage load error', e);
       }
 
+      await loadCloudAccountProfile();
       await loadCloudSummaries();
+      renderAccountProfile();
       inputWeight.value = profile.weight;
       inputHeight.value = profile.height;
       inputAge.value = profile.age || 28;
@@ -5726,6 +5812,77 @@
     });
 
     if (cloudSyncBtn) cloudSyncBtn.addEventListener('click', syncCloudSummaries);
+
+    if (accountProfileBtn && accountProfilePanel) {
+      accountProfileBtn.addEventListener('click', () => {
+        accountProfilePanel.classList.toggle('hidden');
+        if (!accountProfilePanel.classList.contains('hidden')) {
+          renderAccountProfile();
+          loadCloudAccountProfile();
+          accountProfilePanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    }
+    const closeAccountProfileBtn = document.getElementById('close-account-profile-btn');
+    if (closeAccountProfileBtn) closeAccountProfileBtn.addEventListener('click', () => accountProfilePanel?.classList.add('hidden'));
+    if (loadAccountProfileBtn) {
+      loadAccountProfileBtn.addEventListener('click', async () => {
+        loadAccountProfileBtn.disabled = true;
+        if (accountProfileStatus) accountProfileStatus.textContent = '正在從雲端檢查個人資料…';
+        try {
+          await loadCloudAccountProfile();
+        } finally {
+          loadAccountProfileBtn.disabled = false;
+        }
+      });
+    }
+    if (saveAccountProfileBtn) {
+      saveAccountProfileBtn.addEventListener('click', async () => {
+        const displayName = (accountDisplayNameInput?.value || '').trim();
+        const goalNote = (accountGoalNoteInput?.value || '').trim();
+        if (!displayName) {
+          if (accountProfileStatus) accountProfileStatus.textContent = '請先填寫顯示名稱。';
+          accountDisplayNameInput?.focus();
+          return;
+        }
+        accountProfile = { displayName, goalNote, updatedAt: new Date().toISOString() };
+        saveAccountProfileBtn.disabled = true;
+        if (accountProfileStatus) accountProfileStatus.textContent = '正在儲存本機資料…';
+        try {
+          if (window.sayoStorage) await window.sayoStorage.setItem('fitburn_account_profile', JSON.stringify(accountProfile));
+          else localStorage.setItem('fitburn_account_profile', JSON.stringify(accountProfile));
+          renderAccountProfile();
+          if (!window.sayoDb) {
+            if (accountProfileStatus) accountProfileStatus.textContent = '已儲存在此裝置；目前無法使用跨裝置同步。';
+            return;
+          }
+          const userId = await window.sayoDb.getUserId();
+          const result = await window.sayoDb.append('accountProfiles', {
+            id: `fitburn-account-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            authorUserId: userId,
+            displayName: accountProfile.displayName,
+            goalNote: accountProfile.goalNote,
+            updatedAt: accountProfile.updatedAt
+          });
+          if (!result || !result.ok) {
+            const reasons = {
+              'too-large': '資料過大，請縮短目標備註。',
+              'too-many-items': '雲端資料項目已滿。',
+              'quota-exceeded': '雲端儲存空間已滿。',
+              'rate-limited': '儲存太頻繁，請稍候再試。'
+            };
+            if (accountProfileStatus) accountProfileStatus.textContent = `本機已保存；雲端同步失敗：${reasons[result && result.code] || '目前為唯讀或同步暫不可用。'}`;
+            return;
+          }
+          if (accountProfileStatus) accountProfileStatus.textContent = '個人資料已儲存並同步；同一平台帳戶的其他裝置可載入。';
+        } catch (error) {
+          console.error('個人資料儲存失敗', error);
+          if (accountProfileStatus) accountProfileStatus.textContent = '儲存或同步失敗；請檢查連線，本機資料可能仍已保存。';
+        } finally {
+          saveAccountProfileBtn.disabled = false;
+        }
+      });
+    }
 
     window.loadRoutine = function(type) {
       if (type === 'A') {
