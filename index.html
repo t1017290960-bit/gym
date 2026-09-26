@@ -63,6 +63,18 @@
           <i class="fa-solid fa-weight-scale text-emerald-400"></i>
           <span id="toggle-profile-text">修改體重與目標</span>
         </button>
+        <button id="toggle-multi-calc-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-rose-500/40 px-3 py-1.5 rounded-xl text-xs text-rose-300 hover:text-white transition font-semibold">
+          <i class="fa-solid fa-calculator text-rose-400"></i>
+          <span id="toggle-multi-calc-text">全方式卡路里計算</span>
+        </button>
+        <button id="toggle-bf-calc-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-teal-500/40 px-3 py-1.5 rounded-xl text-xs text-teal-300 hover:text-white transition font-semibold">
+          <i class="fa-solid fa-ruler-combined text-teal-400"></i>
+          <span id="toggle-bf-calc-text">體脂測量與換算</span>
+        </button>
+        <button id="toggle-demo-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-purple-500/40 px-3 py-1.5 rounded-xl text-xs text-purple-300 hover:text-white transition font-semibold">
+          <i class="fa-solid fa-person-chalkboard text-purple-400"></i>
+          <span id="toggle-demo-text">動作動態示範</span>
+        </button>
         <button id="toggle-calendar-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-xl text-xs text-slate-200 transition">
           <i class="fa-regular fa-calendar-days text-emerald-400"></i>
           <span id="toggle-cal-text">展開日曆檢視</span>
@@ -70,6 +82,10 @@
         <button id="toggle-exercise-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-emerald-500/50 px-3 py-1.5 rounded-xl text-xs text-emerald-300 hover:text-emerald-200 transition font-semibold">
           <i class="fa-solid fa-dumbbell text-emerald-400"></i>
           <span id="toggle-exercise-text">新增運動紀錄</span>
+        </button>
+        <button id="toggle-warmup-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-orange-500/40 px-3 py-1.5 rounded-xl text-xs text-orange-300 hover:text-white transition font-semibold">
+          <i class="fa-solid fa-person-walking-arrow-right text-orange-400"></i>
+          <span id="toggle-warmup-text">熱身動作推薦</span>
         </button>
         <button id="toggle-schedule-btn" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs text-emerald-300 transition">
           <i class="fa-solid fa-clipboard-list text-emerald-400"></i>
@@ -91,6 +107,563 @@
           <i class="fa-solid fa-moon text-indigo-400"></i>
           <span id="toggle-sleep-text">睡眠燃脂分析</span>
         </button>
+      </div>
+    </div>
+
+    <!-- Multi-Calorie Calculation Hub (心率/步數/NEAT日常/EPOC後燃/手動補登) -->
+    <div id="multi-calc-modal" class="hidden bg-slate-900 border border-rose-500/30 rounded-2xl p-5 space-y-4 shadow-2xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-calculator"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">多維卡路里計算與一鍵入帳中心</h3>
+            <p class="text-[11px] text-slate-400">支援心率腕錶 (Keytel公式)、每日步數換算、NEAT非運動產熱、EPOC重訓後燃及手動補登</p>
+          </div>
+        </div>
+        <button id="close-multi-calc-btn" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-700">
+          <i class="fa-solid fa-xmark mr-1"></i>收起計算器
+        </button>
+      </div>
+
+      <!-- Calc Method Tabs -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+        <button type="button" class="calc-tab-btn active px-3 py-1.5 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 font-semibold shrink-0" data-tab="hr">
+          <i class="fa-solid fa-heart-pulse text-rose-400 mr-1"></i>1. 心率公式計算
+        </button>
+        <button type="button" class="calc-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent font-semibold shrink-0" data-tab="steps">
+          <i class="fa-solid fa-shoe-prints text-emerald-400 mr-1"></i>2. 步數與距離換算
+        </button>
+        <button type="button" class="calc-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent font-semibold shrink-0" data-tab="neat">
+          <i class="fa-solid fa-person-walking-luggage text-amber-400 mr-1"></i>3. NEAT日常產熱
+        </button>
+        <button type="button" class="calc-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent font-semibold shrink-0" data-tab="epoc">
+          <i class="fa-solid fa-fire text-cyan-400 mr-1"></i>4. EPOC重訓後燃
+        </button>
+        <button type="button" class="calc-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent font-semibold shrink-0" data-tab="manual">
+          <i class="fa-solid fa-pen text-indigo-400 mr-1"></i>5. 儀表/自訂直接補登
+        </button>
+      </div>
+
+      <!-- Tab 1: Heart Rate Keytel Formula -->
+      <div id="calc-panel-hr" class="calc-panel space-y-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-heart-pulse text-rose-400"></i> Keytel 心率熱量科學公式
+          </span>
+          <span class="text-[10px] text-slate-400 font-mono">整合性別、體重、年齡與平均心率</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">運動平均心率 (bpm)</label>
+            <input type="number" id="calc-hr-bpm" value="138" min="60" max="220" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-rose-300 font-mono focus:outline-none focus:border-rose-500">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">運動時長 (分鐘)</label>
+            <input type="number" id="calc-hr-duration" value="45" min="1" max="360" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-white font-mono focus:outline-none focus:border-rose-500">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">運動項目名稱</label>
+            <input type="text" id="calc-hr-name" value="心率監測有氧/重訓" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-rose-500">
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center justify-between bg-slate-900/90 p-3 rounded-lg border border-slate-800 text-xs gap-2">
+          <div>
+            <span class="text-slate-400">計算結果：</span>
+            <strong id="calc-hr-result-kcal" class="text-lg font-bold text-rose-400 font-mono">382</strong>
+            <span class="text-slate-400 font-mono">kcal</span>
+            <span id="calc-hr-zone-tag" class="ml-2 text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">Zone 2~3 燃脂區間</span>
+          </div>
+          <button type="button" onclick="recordFromCalc('hr')" class="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition flex items-center gap-1 shadow">
+            <i class="fa-solid fa-plus"></i> 將心率熱量加入紀錄
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 2: Steps & Distance -->
+      <div id="calc-panel-steps" class="calc-panel hidden space-y-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-shoe-prints text-emerald-400"></i> 每日步數與日常步行距離換算
+          </span>
+          <span class="text-[10px] text-slate-400 font-mono">1步約0.7米 · 依體重精算淨消耗</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">今日總步數 (步)</label>
+            <input type="number" id="calc-steps-count" value="8000" min="500" max="80000" step="500" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-emerald-400 font-mono focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">步行速度節奏</label>
+            <select id="calc-steps-speed" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <option value="3.0">悠閒散步 (3.5 km/h, MET 3.0)</option>
+              <option value="4.0" selected>正常日常步行 (4.5 km/h, MET 4.0)</option>
+              <option value="5.0">活力快走 (6.0 km/h, MET 5.0)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">推估距離與時間</label>
+            <div class="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 font-mono">
+              約 <span id="calc-steps-km" class="text-emerald-400 font-bold">5.6</span> km · <span id="calc-steps-mins" class="text-emerald-400 font-bold">75</span> 分鐘
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center justify-between bg-slate-900/90 p-3 rounded-lg border border-slate-800 text-xs gap-2">
+          <div>
+            <span class="text-slate-400">步數熱量消耗：</span>
+            <strong id="calc-steps-result-kcal" class="text-lg font-bold text-emerald-400 font-mono">295</strong>
+            <span class="text-slate-400 font-mono">kcal</span>
+            <span class="ml-2 text-[10px] text-slate-400">(脂肪燃燒約 38.3g)</span>
+          </div>
+          <button type="button" onclick="recordFromCalc('steps')" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition flex items-center gap-1 shadow">
+            <i class="fa-solid fa-plus"></i> 將步數燃脂加入紀錄
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 3: NEAT Activity -->
+      <div id="calc-panel-neat" class="calc-panel hidden space-y-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-person-walking-luggage text-amber-400"></i> NEAT 非運動性日常活動產熱
+          </span>
+          <span class="text-[10px] text-slate-400">減脂期佔人體日常總消耗高達 15%~30%</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">日常活動類型</label>
+            <select id="calc-neat-type" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500">
+              <option value="2.3">站立辦公 / 走動開會 (MET 2.3)</option>
+              <option value="3.5" selected>深層整理家務 / 吸塵擦窗 (MET 3.5)</option>
+              <option value="5.0">手提重物採買 / 抱幼童走路 (MET 5.0)</option>
+              <option value="8.0">走樓梯上下樓替代電梯 (MET 8.0)</option>
+              <option value="3.0">逛街買菜 / 走動購物 (MET 3.0)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">活動累積時長 (分鐘)</label>
+            <input type="number" id="calc-neat-duration" value="30" min="5" max="300" step="5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-white font-mono focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">自訂備註</label>
+            <input type="text" id="calc-neat-notes" placeholder="例如：大掃除、爬6層樓梯" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center justify-between bg-slate-900/90 p-3 rounded-lg border border-slate-800 text-xs gap-2">
+          <div>
+            <span class="text-slate-400">NEAT 產熱消耗：</span>
+            <strong id="calc-neat-result-kcal" class="text-lg font-bold text-amber-400 font-mono">138</strong>
+            <span class="text-slate-400 font-mono">kcal</span>
+          </div>
+          <button type="button" onclick="recordFromCalc('neat')" class="px-4 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition flex items-center gap-1 shadow">
+            <i class="fa-solid fa-plus"></i> 將 NEAT 產熱加入紀錄
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 4: EPOC Afterburn Effect -->
+      <div id="calc-panel-epoc" class="calc-panel hidden space-y-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-fire text-cyan-400"></i> EPOC 運動後過量氧耗 (後燃效應)
+          </span>
+          <span class="text-[10px] text-slate-400">大重量重訓與HIIT後 24~48 小時持續燃脂</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">主運動正式消耗 (kcal)</label>
+            <input type="number" id="calc-epoc-base" value="350" min="50" max="2000" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-white font-mono focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">主運動強度等級</label>
+            <select id="calc-epoc-intensity" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+              <option value="0.06">中等強度重訓 (6% 後燃)</option>
+              <option value="0.10" selected>高強度大重量重訓 (10% 後燃)</option>
+              <option value="0.14">HIIT極限竭盡 / 循環訓練 (14% 後燃)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">說明</label>
+            <div class="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-400 leading-tight">
+              肌纖維微創修復、肌糖原再合成及乳酸排除額外代償消耗
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center justify-between bg-slate-900/90 p-3 rounded-lg border border-slate-800 text-xs gap-2">
+          <div>
+            <span class="text-slate-400">額外後燃產熱：</span>
+            <strong id="calc-epoc-result-kcal" class="text-lg font-bold text-cyan-400 font-mono">35</strong>
+            <span class="text-slate-400 font-mono">kcal</span>
+          </div>
+          <button type="button" onclick="recordFromCalc('epoc')" class="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition flex items-center gap-1 shadow">
+            <i class="fa-solid fa-plus"></i> 將後燃效應加入紀錄
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 5: Manual Custom Calories Entry -->
+      <div id="calc-panel-manual" class="calc-panel hidden space-y-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-pen text-indigo-400"></i> 手錶 / 健身房器材熱量直接補登
+          </span>
+          <span class="text-[10px] text-slate-400">Apple Watch、Garmin、跑步機螢幕顯示數值直接錄入</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">活動/設備名稱</label>
+            <input type="text" id="calc-manual-name" value="運動手錶紀錄 (自訂)" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">消耗熱量 (kcal)</label>
+            <input type="number" id="calc-manual-kcal" value="250" min="1" max="5000" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-indigo-300 font-mono focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">時長 (分鐘)</label>
+            <input type="number" id="calc-manual-duration" value="30" min="1" max="300" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-white font-mono focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <button type="button" onclick="recordFromCalc('manual')" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-check"></i> 將自訂數值加入當日紀錄
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Movement Demonstration & Posture Visual Guide Modal -->
+    <div id="demo-modal" class="hidden bg-slate-900 border border-purple-500/40 rounded-2xl p-5 space-y-4 shadow-2xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-person-chalkboard"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <span id="demo-modal-title">動作示範與姿勢圖解</span>
+              <span id="demo-modal-cat" class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 font-mono">科學動態圖解</span>
+            </h3>
+            <p class="text-[11px] text-slate-400">精準生物力學軌跡、關節發力口訣、常犯代償與組數處方</p>
+          </div>
+        </div>
+        <button id="close-demo-btn" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-700">
+          <i class="fa-solid fa-xmark mr-1"></i>收起示範
+        </button>
+      </div>
+
+      <!-- Quick Selector for All Exercises -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="text-xs text-slate-400 shrink-0">切換示範動作：</span>
+        <select id="demo-exercise-select" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500">
+          <optgroup label="🔥 熱身與關節活化">
+            <option value="warmup-wgs">世界最偉大伸展 (World's Greatest Stretch)</option>
+            <option value="warmup-catcow">貓牛式 + 胸椎旋轉 (Cat-Cow)</option>
+            <option value="warmup-bridge">雙腿臀橋頂峰收縮 (Glute Bridge)</option>
+            <option value="warmup-bird-dog">鳥狗式核心抗旋 (Bird-Dog)</option>
+            <option value="warmup-airsquat">徒手深蹲 (Air Squats)</option>
+            <option value="warmup-jacks">開合跳 (Jumping Jacks)</option>
+          </optgroup>
+          <optgroup label="🏋️ 課表 A 重訓動作">
+            <option value="squat" selected>槓鈴深蹲 (Back Squat)</option>
+            <option value="bench-press">槓鈴臥推 (Bench Press)</option>
+            <option value="lat-pulldown">高位滑輪下拉 (Lat Pulldown)</option>
+            <option value="romanian-deadlift">羅馬尼亞硬舉 (RDL)</option>
+            <option value="lateral-raise">啞鈴側平舉 (Lateral Raise)</option>
+            <option value="plank">平板支撐 (Plank)</option>
+          </optgroup>
+          <optgroup label="🏋️ 課表 B 重訓動作">
+            <option value="deadlift">傳統硬舉 (Deadlift)</option>
+            <option value="incline-dumbbell">上斜啞鈴臥推 (Incline DB Press)</option>
+            <option value="seated-cable-row">坐姿划船 (Seated Cable Row)</option>
+            <option value="bulgarian-split-squat">保加利亞分腿蹲 (Bulgarian Split Squat)</option>
+            <option value="leg-extension-curl">坐姿腿屈伸 / 腿彎舉</option>
+            <option value="cable-crunch">繩索跪姿捲腹 (Cable Crunch)</option>
+          </optgroup>
+          <optgroup label="⚡ 腹肌王牌專項">
+            <option value="legraise">懸垂舉腿 (Hanging Leg Raise)</option>
+          </optgroup>
+        </select>
+        <button type="button" id="demo-add-to-today-btn" class="ml-auto px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow">
+          <i class="fa-solid fa-plus"></i> 一鍵帶入此動作至今日紀錄
+        </button>
+      </div>
+
+      <!-- Demo Visual Trajectory SVG & Details Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <!-- Visual Movement Stage Canvas (Left) -->
+        <div class="md:col-span-5 bg-slate-950/90 border border-slate-800 rounded-xl p-4 flex flex-col items-center justify-between relative overflow-hidden">
+          <div class="w-full flex justify-between items-center text-xs pb-2 border-b border-slate-800">
+            <span class="text-purple-400 font-bold flex items-center gap-1">
+              <i class="fa-solid fa-wave-square"></i> 動作軌跡視覺示意
+            </span>
+            <span id="demo-tempo-tag" class="text-[10px] text-slate-400 font-mono bg-slate-900 px-2 py-0.5 rounded border border-slate-800">節奏 3-1-1</span>
+          </div>
+
+          <!-- Dynamic SVG Movement Diagram -->
+          <div id="demo-svg-container" class="w-full h-48 flex items-center justify-center my-2">
+            <!-- Rendered via JS -->
+          </div>
+
+          <!-- Target Muscles Badges -->
+          <div class="w-full space-y-1">
+            <span class="text-[10px] text-slate-400 block">主要徵召肌群：</span>
+            <div id="demo-muscles-chips" class="flex flex-wrap gap-1"></div>
+          </div>
+        </div>
+
+        <!-- Step-by-Step Cues & Warnings (Right) -->
+        <div class="md:col-span-7 space-y-3 bg-slate-950/70 border border-slate-800 rounded-xl p-4 text-xs">
+          <!-- Cue 1: Preparation & Setup -->
+          <div class="space-y-1">
+            <span class="font-bold text-emerald-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-1 text-[11px]"></i> 1. 起始準備姿態 (Setup)
+            </span>
+            <p id="demo-setup-text" class="text-slate-300 leading-relaxed pl-4"></p>
+          </div>
+
+          <!-- Cue 2: Execution & Movement Path -->
+          <div class="space-y-1">
+            <span class="font-bold text-cyan-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-2 text-[11px]"></i> 2. 動作行程與發力訣竅 (Execution)
+            </span>
+            <p id="demo-exec-text" class="text-slate-300 leading-relaxed pl-4"></p>
+          </div>
+
+          <!-- Cue 3: Mistakes to Avoid -->
+          <div class="space-y-1 bg-rose-950/20 p-2.5 rounded-lg border border-rose-500/20">
+            <span class="font-bold text-rose-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation text-[11px]"></i> 常見代償與避坑指南
+            </span>
+            <p id="demo-mistake-text" class="text-slate-300 leading-relaxed pl-4"></p>
+          </div>
+
+          <!-- Cue 4: Breathing & Suggested Reps -->
+          <div class="flex items-center justify-between text-[11px] pt-1 text-slate-400 border-t border-slate-800">
+            <span>🫁 呼吸：<strong id="demo-breath-text" class="text-white">下落吸氣、推起呼氣</strong></span>
+            <span>🎯 推薦：<strong id="demo-reps-text" class="text-purple-300 font-mono">3 組 × 8～12 次</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body Fat Measurement & Conversion Center (體脂率換算與測量中心) -->
+    <div id="bodyfat-calc-modal" class="hidden bg-slate-900 border border-teal-500/40 rounded-2xl p-5 space-y-4 shadow-2xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-ruler-combined"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              體脂率科學測量與換算中心
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 font-mono">DEXA對標算法</span>
+            </h3>
+            <p class="text-[11px] text-slate-400">支援美國海軍皮尺公式、BMI年齡性別換算、皮褶厚度三點測量及腰圍身高比 (WHtR)</p>
+          </div>
+        </div>
+        <button id="close-bf-calc-btn" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-700">
+          <i class="fa-solid fa-xmark mr-1"></i>收起體脂換算
+        </button>
+      </div>
+
+      <!-- Body Fat Calc Tabs -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+        <button type="button" class="bf-tab-btn active px-3 py-1.5 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/40 font-semibold shrink-0" data-tab="navy">
+          <i class="fa-solid fa-tape text-teal-400 mr-1"></i>1. 美國海軍皮尺公式 (最推薦)
+        </button>
+        <button type="button" class="bf-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent font-semibold shrink-0" data-tab="bmi">
+          <i class="fa-solid fa-calculator text-cyan-400 mr-1"></i>2. BMI與年齡換算 (Deurenberg)
+        </button>
+        <button type="button" class="bf-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent font-semibold shrink-0" data-tab="skinfold">
+          <i class="fa-solid fa-hand-holding-droplet text-amber-400 mr-1"></i>3. 皮褶夾3點測量 (Jackson-Pollock)
+        </button>
+        <button type="button" class="bf-tab-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-transparent font-semibold shrink-0" data-tab="whtr">
+          <i class="fa-solid fa-heart-circle-bolt text-rose-400 mr-1"></i>4. 腰圍身高比與內臟脂肪 (WHtR)
+        </button>
+      </div>
+
+      <!-- Tab 1: US Navy Method -->
+      <div id="bf-panel-navy" class="bf-panel space-y-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-tape text-teal-400"></i> 美國海軍皮尺測量公式 (U.S. Navy Circumference Method)
+          </span>
+          <span class="text-[10px] text-slate-400">無需儀器 · 國際公認最準確居家皮尺測法</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">
+              腰圍 (肚臍水平水平一圈, cm)
+            </label>
+            <input type="number" id="bf-navy-waist" value="82" min="50" max="180" step="0.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-teal-300 font-mono focus:outline-none focus:border-teal-500">
+            <span class="text-[10px] text-slate-500">呼氣末放鬆測量，勿用力縮腹</span>
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1">
+              頸圍 (喉結正下方水平一圈, cm)
+            </label>
+            <input type="number" id="bf-navy-neck" value="38" min="20" max="65" step="0.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-white font-mono focus:outline-none focus:border-teal-500">
+            <span class="text-[10px] text-slate-500">肩膀放鬆自然平視測量</span>
+          </div>
+          <div id="bf-navy-hip-container" class="opacity-50">
+            <label class="block text-[11px] text-slate-300 mb-1">
+              臀圍 (臀部最寬處一圈, cm) <span class="text-[10px] text-amber-400 font-normal">(女性必填)</span>
+            </label>
+            <input type="number" id="bf-navy-hip" value="95" min="60" max="180" step="0.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-white font-mono focus:outline-none focus:border-teal-500">
+            <span class="text-[10px] text-slate-500">目前為男性：男性公式不需計入臀圍</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: BMI & Deurenberg Formula -->
+      <div id="bf-panel-bmi" class="bf-panel hidden space-y-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-calculator text-cyan-400"></i> Deurenberg 體脂率換算公式
+          </span>
+          <span class="text-[10px] text-slate-400">以 BMI、生理性別與年齡建立的回歸模型</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-2.5">
+            <span class="text-slate-400 block mb-1">連動個人身高/體重：</span>
+            <div class="font-mono text-sm text-white font-bold">
+              <span id="bf-bmi-height-label">172</span> cm / <span id="bf-bmi-weight-label">75</span> kg
+            </div>
+            <span class="text-[10px] text-slate-500">即時與個人檔案同調</span>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-2.5">
+            <span class="text-slate-400 block mb-1">計算得出 BMI：</span>
+            <div class="font-mono text-base text-cyan-300 font-bold" id="bf-bmi-val-label">25.35</div>
+            <span class="text-[10px] text-amber-400" id="bf-bmi-category-label">過重邊緣 (肌肉量需評估)</span>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-2.5">
+            <span class="text-slate-400 block mb-1">公式模型：</span>
+            <p class="text-[10px] text-slate-300 font-mono leading-tight">
+              %BF = (1.20 × BMI) + (0.23 × 年齡) - (10.8 × 性別) - 5.4
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Jackson-Pollock 3-Site Skinfold -->
+      <div id="bf-panel-skinfold" class="bf-panel hidden space-y-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-hand-holding-droplet text-amber-400"></i> Jackson-Pollock 3點皮褶夾測量 (Skinfold Caliper)
+          </span>
+          <span class="text-[10px] text-slate-400">皮褶厚度計 (mm) · 專業教練檢測常用</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1" id="bf-skinfold-site1-label">
+              胸部皮褶 (Chest, mm)
+            </label>
+            <input type="number" id="bf-skinfold-site1" value="14" min="2" max="60" step="1" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-amber-300 font-mono focus:outline-none focus:border-amber-500">
+            <span class="text-[10px] text-slate-500">腋前線與乳頭中點，對角捏起</span>
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1" id="bf-skinfold-site2-label">
+              腹部皮褶 (Abdominal, mm)
+            </label>
+            <input type="number" id="bf-skinfold-site2" value="22" min="2" max="60" step="1" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-amber-300 font-mono focus:outline-none focus:border-amber-500">
+            <span class="text-[10px] text-slate-500">肚臍右側約 2 公分處，垂直捏起</span>
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-300 mb-1" id="bf-skinfold-site3-label">
+              大腿前側皮褶 (Thigh, mm)
+            </label>
+            <input type="number" id="bf-skinfold-site3" value="16" min="2" max="60" step="1" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm font-bold text-amber-300 font-mono focus:outline-none focus:border-amber-500">
+            <span class="text-[10px] text-slate-500">大腿前側髖骨與髕骨中點垂直捏起</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 4: WHtR & Visceral Fat Risk -->
+      <div id="bf-panel-whtr" class="bf-panel hidden space-y-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-heart-circle-bolt text-rose-400"></i> 腰圍身高比 (WHtR) 與內臟脂肪健康評估
+          </span>
+          <span class="text-[10px] text-slate-400">醫學界公認比單純 BMI 更能反映心血管與代謝綜合徵風險</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-center">
+            <span class="text-slate-400 block mb-1">腰圍身高比 (WHtR)</span>
+            <div class="font-mono text-xl text-rose-400 font-extrabold" id="bf-whtr-val">0.477</div>
+            <span class="text-[10px] text-emerald-400" id="bf-whtr-status">標準健康範圍 (&lt; 0.5)</span>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-center">
+            <span class="text-slate-400 block mb-1">腹部內臟脂肪推估</span>
+            <div class="font-mono text-base text-amber-300 font-bold" id="bf-visceral-level">等級 4～6 (中低)</div>
+            <span class="text-[10px] text-slate-500">不易誘發胰島素阻抗</span>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-2.5">
+            <span class="text-slate-400 block mb-1">健康判讀指標：</span>
+            <p class="text-[10px] text-slate-300 leading-tight">
+              • &lt; 0.4：偏瘦<br>
+              • 0.4～0.49：健康理想（腹肌可見潛力高）<br>
+              • 0.5～0.59：腹部脂肪偏高<br>
+              • &gt; 0.6：高心血管與脂肪肝風險
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Realtime Calculation Result & Sync Banner -->
+      <div class="bg-slate-950/90 border border-teal-500/40 rounded-xl p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="text-teal-300 font-bold flex items-center gap-1">
+              <i class="fa-solid fa-square-poll-vertical"></i> 測算結果輸出
+            </span>
+            <span id="bf-active-method-tag" class="text-[10px] px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/40">美國海軍皮尺法</span>
+          </div>
+          <span id="bf-body-type-badge" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">
+            健康標準減脂期 (21%~24%)
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center text-xs">
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">測算體脂率 (%)</span>
+            <div class="text-xl font-extrabold text-teal-300 font-mono">
+              <span id="bf-result-percent">22.8</span> %
+            </div>
+            <span class="text-[9px] text-slate-500" id="bf-diff-from-curr">比目前(23%) -0.2%</span>
+          </div>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">總體脂肪重量</span>
+            <div class="text-base font-bold text-amber-400 font-mono">
+              <span id="bf-result-fat-kg">17.1</span> kg
+            </div>
+            <span class="text-[9px] text-slate-500">體重 × 體脂率</span>
+          </div>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">淨瘦體重 (LBM)</span>
+            <div class="text-base font-bold text-cyan-300 font-mono">
+              <span id="bf-result-lbm-kg">57.9</span> kg
+            </div>
+            <span class="text-[9px] text-slate-500">骨骼肌、器官與骨骼</span>
+          </div>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">距離 15% 腹肌線</span>
+            <div class="text-base font-bold text-emerald-400 font-mono">
+              需減 <span id="bf-result-need-drop-kg">6.9</span> kg 脂
+            </div>
+            <span class="text-[9px] text-slate-500">約需 53,100 kcal 赤字</span>
+          </div>
+        </div>
+
+        <!-- Sync Button -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800">
+          <p class="text-[11px] text-slate-400">
+            💡 點擊右側按鈕可將此測算結果即時同步至個人設定與腹肌里程碑
+          </p>
+          <button type="button" id="apply-bf-sync-btn" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-lg">
+            <i class="fa-solid fa-check-double"></i> 同步套用為個人目前體脂率
+          </button>
+        </div>
       </div>
     </div>
 
@@ -182,6 +755,184 @@
       <button type="button" id="save-sleep-record-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-xl text-xs transition">
         儲存當日睡眠燃脂紀錄
       </button>
+    </div>
+
+    <!-- Dynamic Warm-up & Joint Activation Drawer (Collapsible) -->
+    <div id="warmup-modal" class="hidden bg-slate-900 border border-orange-500/30 rounded-2xl p-5 space-y-4 shadow-2xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-fire-burner"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">科學動態熱身與關節活化推薦</h3>
+            <p class="text-[11px] text-slate-400">拒絕靜態拉伸削弱力量！三階段提升關節滑液分泌、核心體溫與神經肌肉徵召</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="applyWarmupRoutine('full')" class="px-2.5 py-1 rounded-lg bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 border border-orange-500/40 text-xs font-semibold flex items-center gap-1 transition">
+            <i class="fa-solid fa-plus text-[10px]"></i>一鍵帶入 8 分鐘熱身 (45 kcal)
+          </button>
+          <button id="close-warmup-btn" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-700">
+            <i class="fa-solid fa-xmark mr-1"></i>收起熱身
+          </button>
+        </div>
+      </div>
+
+      <!-- 3-Phase Warm-up System Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <!-- Phase 1: Core Temperature -->
+        <div class="bg-slate-950/80 border border-orange-500/20 rounded-xl p-3.5 space-y-2.5 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span class="text-xs font-bold text-orange-400 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-md bg-orange-500/20 flex items-center justify-center text-[10px] font-mono">1</span>
+                階段一：全身升溫 (2~3 分鐘)
+              </span>
+              <span class="text-[10px] text-slate-400 font-mono">心率 100~120</span>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              <strong>目標</strong>：升高深層肌溫、活化血液循環與關節滑液分泌，降低肌腱黏滯性與拉傷風險。
+            </p>
+            <ul class="text-xs space-y-1.5 text-slate-200">
+              <li class="bg-slate-900/80 px-2 py-1.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span>🏃 原地輕跑 / 小碎步</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] text-slate-400 font-mono">60 秒</span>
+                  <button type="button" onclick="openExerciseDemo('warmup-airsquat')" class="px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 text-[10px] border border-orange-500/30"><i class="fa-solid fa-play text-[9px] mr-1"></i>示範</button>
+                </div>
+              </li>
+              <li class="bg-slate-900/80 px-2 py-1.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span>⭐ 開合跳 (Jumping Jacks)</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] text-slate-400 font-mono">30～45 秒</span>
+                  <button type="button" onclick="openExerciseDemo('warmup-jacks')" class="px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 text-[10px] border border-orange-500/30"><i class="fa-solid fa-play text-[9px] mr-1"></i>示範</button>
+                </div>
+              </li>
+              <li class="bg-slate-900/80 px-2 py-1.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span>🥊 踏步揮拳 / 慢速跳繩</span>
+                <span class="text-[10px] text-slate-400 font-mono">60 秒</span>
+              </li>
+            </ul>
+          </div>
+          <div class="text-[10px] text-orange-400/90 bg-orange-950/30 p-2 rounded-lg border border-orange-500/20">
+            💡 微微出汗即可，勿過度劇烈消耗正式組體能。
+          </div>
+        </div>
+
+        <!-- Phase 2: Dynamic Mobility -->
+        <div class="bg-slate-950/80 border border-amber-500/20 rounded-xl p-3.5 space-y-2.5 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-md bg-amber-500/20 flex items-center justify-center text-[10px] font-mono">2</span>
+                階段二：關節動態活動度 (3~4 分鐘)
+              </span>
+              <span class="text-[10px] text-slate-400 font-mono">胸椎/髖/肩</span>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              <strong>目標</strong>：解鎖胸椎活動度、打開髖關節與踝背屈，讓深蹲、臥推與硬舉動作幅度標準無痛。
+            </p>
+            <ul class="text-xs space-y-1.5 text-slate-200">
+              <li class="bg-slate-900/80 px-2 py-1.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span>🌍 世界最偉大伸展 (WGS)</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] text-amber-400 font-mono">每側 5 次</span>
+                  <button type="button" onclick="openExerciseDemo('warmup-wgs')" class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 text-[10px] border border-amber-500/30"><i class="fa-solid fa-play text-[9px] mr-1"></i>示範</button>
+                </div>
+              </li>
+              <li class="bg-slate-900/80 px-2 py-1.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span>🐈 貓牛式 + 胸椎旋轉</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] text-amber-400 font-mono">8～10 次</span>
+                  <button type="button" onclick="openExerciseDemo('warmup-catcow')" class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 text-[10px] border border-amber-500/30"><i class="fa-solid fa-play text-[9px] mr-1"></i>示範</button>
+                </div>
+              </li>
+              <li class="bg-slate-900/80 px-2 py-1.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span>🦵 弓步旋轉 + 髖鉸鏈擺盪</span>
+                <span class="text-[10px] text-amber-400 font-mono">每側 6 次</span>
+              </li>
+            </ul>
+          </div>
+          <div class="text-[10px] text-amber-400/90 bg-amber-950/30 p-2 rounded-lg border border-amber-500/20">
+            ⚠️ 避免長時間靜止拉伸，維持動態彈性律動。
+          </div>
+        </div>
+
+        <!-- Phase 3: Muscle Activation -->
+        <div class="bg-slate-950/80 border border-emerald-500/20 rounded-xl p-3.5 space-y-2.5 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-md bg-emerald-500/20 flex items-center justify-center text-[10px] font-mono">3</span>
+                階段三：神經肌群喚醒 (2~3 分鐘)
+              </span>
+              <span class="text-[10px] text-slate-400 font-mono">臀肌/核心/肩袖</span>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              <strong>目標</strong>：喚醒久坐休眠的臀大肌與深層核心，提升主運動出力效率與脊椎穩定。
+            </p>
+            <ul class="text-xs space-y-1.5 text-slate-200">
+              <li class="bg-slate-900/80 px-2 py-1.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span>🍑 雙腿/單腿臀橋頂峰收縮</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] text-emerald-400 font-mono">12 次 · 停2秒</span>
+                  <button type="button" onclick="openExerciseDemo('warmup-bridge')" class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 text-[10px] border border-emerald-500/30"><i class="fa-solid fa-play text-[9px] mr-1"></i>示範</button>
+                </div>
+              </li>
+              <li class="bg-slate-900/80 px-2 py-1.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span>🐶 鳥狗式 (Bird-Dog 核心)</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] text-emerald-400 font-mono">每側 8 次</span>
+                  <button type="button" onclick="openExerciseDemo('warmup-bird-dog')" class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 text-[10px] border border-emerald-500/30"><i class="fa-solid fa-play text-[9px] mr-1"></i>示範</button>
+                </div>
+              </li>
+              <li class="bg-slate-900/80 px-2 py-1.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span>🏋️ 空手深蹲 (徒手自重)</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] text-emerald-400 font-mono">10 次慢速</span>
+                  <button type="button" onclick="openExerciseDemo('warmup-airsquat')" class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 text-[10px] border border-emerald-500/30"><i class="fa-solid fa-play text-[9px] mr-1"></i>示範</button>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="text-[10px] text-emerald-400/90 bg-emerald-950/30 p-2 rounded-lg border border-emerald-500/20">
+            🎯 感受目標肌群強烈緊縮，建立神經連結。
+          </div>
+        </div>
+      </div>
+
+      <!-- Specific Lifting Warm-up Pyramid Guideline -->
+      <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 space-y-2">
+        <div class="flex items-center justify-between text-xs border-b border-slate-800 pb-1.5">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-pyramid text-orange-400"></i> 主項重訓熱身組金字塔科學排法 (以正式組 60kg 為例)
+          </span>
+          <span class="text-[11px] text-slate-400 font-mono">避免乳酸過早累積</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+          <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">熱身第 1 組 (空槓)</span>
+            <span class="font-bold text-orange-300 font-mono">20kg × 10次</span>
+            <span class="text-[9px] text-slate-500 block">抓動作軌跡 · 休息30秒</span>
+          </div>
+          <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">熱身第 2 組 (50%)</span>
+            <span class="font-bold text-amber-300 font-mono">30kg × 6次</span>
+            <span class="text-[9px] text-slate-500 block">加快向心速度 · 休息45秒</span>
+          </div>
+          <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">熱身第 3 組 (75%)</span>
+            <span class="font-bold text-emerald-300 font-mono">45kg × 3次</span>
+            <span class="text-[9px] text-slate-500 block">高神經傳導 · 休息60秒</span>
+          </div>
+          <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 block mb-0.5">熱身第 4 組 (90%)</span>
+            <span class="font-bold text-cyan-300 font-mono">54kg × 1次</span>
+            <span class="text-[9px] text-slate-500 block">神經適應重量 · 休息90秒</span>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="schedule-modal" class="hidden bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 space-y-4 shadow-2xl">
       <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
@@ -318,7 +1069,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>1. 深蹲</span>
-                    <span class="text-[10px] text-slate-400 font-normal">或 腿推機</span>
+                    <button type="button" onclick="openExerciseDemo('squat')" class="text-[10px] text-purple-300 hover:underline bg-purple-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-purple-400 font-medium">股四頭肌 · 臀大肌</span>
                 </div>
@@ -333,7 +1084,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>2. 臥推</span>
-                    <span class="text-[10px] text-slate-400 font-normal">或 胸推機</span>
+                    <button type="button" onclick="openExerciseDemo('bench-press')" class="text-[10px] text-rose-300 hover:underline bg-rose-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-rose-400 font-medium">胸大肌 · 三頭肌</span>
                 </div>
@@ -348,7 +1099,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>3. 滑輪下拉</span>
-                    <span class="text-[10px] text-slate-400 font-normal">練背寬度</span>
+                    <button type="button" onclick="openExerciseDemo('lat-pulldown')" class="text-[10px] text-sky-300 hover:underline bg-sky-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-sky-400 font-medium">背闊肌 · 二頭肌</span>
                 </div>
@@ -363,7 +1114,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>4. 羅馬尼亞硬舉</span>
-                    <span class="text-[10px] text-slate-400 font-normal">RDL</span>
+                    <button type="button" onclick="openExerciseDemo('romanian-deadlift')" class="text-[10px] text-amber-300 hover:underline bg-amber-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-amber-400 font-medium">臀部 · 腿後腱群</span>
                 </div>
@@ -378,7 +1129,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>5. 啞鈴側平舉</span>
-                    <span class="text-[10px] text-slate-400 font-normal">練肩寬</span>
+                    <button type="button" onclick="openExerciseDemo('lateral-raise')" class="text-[10px] text-indigo-300 hover:underline bg-indigo-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-indigo-400 font-medium">三角肌中束</span>
                 </div>
@@ -393,7 +1144,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>6. 平板支撐</span>
-                    <span class="text-[10px] text-slate-400 font-normal">棒式</span>
+                    <button type="button" onclick="openExerciseDemo('plank')" class="text-[10px] text-emerald-300 hover:underline bg-emerald-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-emerald-400 font-medium">腹橫肌 · 核心穩定</span>
                 </div>
@@ -423,7 +1174,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>1. 硬舉變化式</span>
-                    <span class="text-[10px] text-slate-400 font-normal">或 臀推</span>
+                    <button type="button" onclick="openExerciseDemo('deadlift')" class="text-[10px] text-amber-300 hover:underline bg-amber-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-amber-400 font-medium">全身爆發 · 臀後側</span>
                 </div>
@@ -438,7 +1189,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>2. 上斜啞鈴推</span>
-                    <span class="text-[10px] text-slate-400 font-normal">或 伏地挺身</span>
+                    <button type="button" onclick="openExerciseDemo('incline-dumbbell')" class="text-[10px] text-rose-300 hover:underline bg-rose-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-rose-400 font-medium">上胸部 · 前三角肌</span>
                 </div>
@@ -453,7 +1204,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>3. 坐姿划船</span>
-                    <span class="text-[10px] text-slate-400 font-normal">練背厚度</span>
+                    <button type="button" onclick="openExerciseDemo('seated-cable-row')" class="text-[10px] text-sky-300 hover:underline bg-sky-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-sky-400 font-medium">菱形肌 · 中下斜方肌</span>
                 </div>
@@ -468,6 +1219,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>4. 保加利亞分腿蹲</span>
+                    <button type="button" onclick="openExerciseDemo('bulgarian-split-squat')" class="text-[10px] text-purple-300 hover:underline bg-purple-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-purple-400 font-medium">單側臀腿 · 平衡協調</span>
                 </div>
@@ -482,7 +1234,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>5. 腿彎舉</span>
-                    <span class="text-[10px] text-slate-400 font-normal">腿屈伸機</span>
+                    <button type="button" onclick="openExerciseDemo('leg-extension-curl')" class="text-[10px] text-violet-300 hover:underline bg-violet-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-violet-400 font-medium">股二頭肌 (腿後腱)</span>
                 </div>
@@ -497,7 +1249,7 @@
                 <div>
                   <div class="font-bold text-white flex items-center gap-1">
                     <span>6. 繩索捲腹</span>
-                    <span class="text-[10px] text-slate-400 font-normal">腹肌線條</span>
+                    <button type="button" onclick="openExerciseDemo('cable-crunch')" class="text-[10px] text-teal-300 hover:underline bg-teal-500/10 px-1 rounded ml-1">🎬 示範</button>
                   </div>
                   <span class="text-[10px] text-teal-400 font-medium">腹直肌 (六塊肌)</span>
                 </div>
@@ -1094,8 +1846,15 @@
       <!-- Basic Body Metrics -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         <div>
-          <label class="block text-[11px] text-slate-400 mb-1">目前體重 (kg)</label>
-          <input type="number" id="input-weight" value="75" min="30" max="250" step="0.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-[11px] text-slate-400">目前體重 (kg)</label>
+            <span class="text-[10px] text-emerald-400 font-mono">即時連動</span>
+          </div>
+          <div class="flex items-center bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+            <button type="button" id="weight-stepper-minus" class="px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-slate-700 text-xs font-bold transition">-</button>
+            <input type="number" id="input-weight" value="75" min="30" max="250" step="0.5" class="w-full bg-transparent text-center text-sm font-bold text-white focus:outline-none py-1 font-mono">
+            <button type="button" id="weight-stepper-plus" class="px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-slate-700 text-xs font-bold transition">+</button>
+          </div>
         </div>
         <div>
           <label class="block text-[11px] text-slate-400 mb-1">身高 (cm)</label>
@@ -1127,7 +1886,12 @@
         </div>
 
         <div>
-          <label class="block text-[11px] text-slate-400 mb-1">目前體脂率 (%)</label>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-[11px] text-slate-400">目前體脂率 (%)</label>
+            <button type="button" onclick="openBodyFatCalcModal()" class="text-[10px] text-teal-400 hover:underline flex items-center gap-1">
+              <i class="fa-solid fa-ruler-combined"></i> 測量換算
+            </button>
+          </div>
           <div class="relative">
             <input type="number" id="input-bodyfat" value="23" min="5" max="50" step="0.5" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 pr-8">
             <span class="absolute right-3 top-1.5 text-xs text-slate-400">%</span>
@@ -1726,6 +2490,888 @@
     let activeTab = 'preset';
     let currentRecordMode = 'strength';
 
+    // Comprehensive Movement Demonstration Database
+    const EXERCISE_DEMOS = {
+      'squat': {
+        title: '槓鈴深蹲 (Back Squat)',
+        category: '下肢力量之王',
+        tempo: '離心 3秒 - 停頓 1秒 - 向心 1秒',
+        muscles: ['股四頭肌', '臀大肌', '內收肌群', '豎脊肌核心'],
+        setup: '雙腳與肩同寬或略寬，腳尖自然外展約 15~30 度。槓鈴置於斜方肌中上部（高槓）或後三角肌上（低槓），雙手牢固抓握，腹部深吸氣蓄壓瓦氏呼吸（Valsalva）。',
+        execution: '髖膝同時折疊，臀部向後下方坐，膝蓋沿腳尖方向推進。下蹲至大腿低於水平面（髖關節低於膝關節上沿），足跟穩定踩實地面，全力推蹬起立，頂峰夾臀不超伸。',
+        mistake: '膝蓋內扣 (Knee Valgus)、骨盆屁股眨眼過度折腰、重心前移腳後跟離地。',
+        breath: '下蹲前腹式深吸氣閉氣下落，蹲起過黏滯點後全力呼氣。',
+        reps: '3～4 組 × 6～10 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <line x1="20" y1="140" x2="180" y2="140" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+          <!-- Starting figure (ghosted) -->
+          <circle cx="70" cy="40" r="8" fill="#64748b" opacity="0.4"/>
+          <line x1="70" y1="48" x2="70" y2="85" stroke="#64748b" stroke-width="4" opacity="0.4"/>
+          <line x1="70" y1="85" x2="68" y2="115" stroke="#64748b" stroke-width="4" opacity="0.4"/>
+          <line x1="68" y1="115" x2="66" y2="140" stroke="#64748b" stroke-width="4" opacity="0.4"/>
+          <!-- Bottom squat position (active) -->
+          <circle cx="120" cy="70" r="9" fill="#10b981"/>
+          <!-- Barbell -->
+          <line x1="95" y1="78" x2="145" y2="78" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="95" cy="78" r="6" fill="#ef4444"/>
+          <circle cx="145" cy="78" r="6" fill="#ef4444"/>
+          <!-- Torso -->
+          <line x1="120" y1="78" x2="105" y2="108" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+          <!-- Thigh (parallel/below) -->
+          <line x1="105" y1="108" x2="135" y2="112" stroke="#34d399" stroke-width="5" stroke-linecap="round"/>
+          <!-- Shin -->
+          <line x1="135" y1="112" x2="130" y2="140" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+          <!-- Down & Up Motion Arrow -->
+          <path d="M 65 70 Q 90 95 105 105" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-dasharray="4,4"/>
+          <polygon points="108,103 103,110 100,102" fill="#a855f7"/>
+          <text x="30" y="25" fill="#10b981" font-size="10" font-weight="bold">深蹲深至水平線下</text>
+        </svg>`
+      },
+      'bench-press': {
+        title: '槓鈴臥推 (Bench Press)',
+        category: '上肢推力王牌',
+        tempo: '慢速下放 2.5秒 - 胸口觸碰 0.5秒 - 爆發推起 1秒',
+        muscles: ['胸大肌整體', '肱三頭肌', '三角肌前束'],
+        setup: '平躺臥推凳，雙眼位於槓鈴垂直下方。五點支撐（雙腳踩實地面、臀部、上背、後腦勺）。肩胛骨後收下沉，雙手握距約 1.5 倍肩寬，起槓移至胸口正上方。',
+        execution: '深吸氣收緊核心，手肘自然外展約 45~75 度（忌 90 度十字形），控制槓鈴落至胸肌乳頭中下沿，感受胸肌強烈拉伸後，足底向地面蹬地借力，將槓鈴推起呈微弧線回到起始位置。',
+        mistake: '手肘外展成 90 度引起肩峰撞擊、槓鈴在胸口彈震借力、臀部抬離凳面。',
+        breath: '槓鈴緩慢下放時深吸氣蓄壓，推起越過阻力瓶頸點時呼氣。',
+        reps: '3～4 組 × 6～12 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <!-- Bench -->
+          <rect x="30" y="105" width="140" height="12" rx="3" fill="#334155"/>
+          <line x1="50" y1="117" x2="50" y2="145" stroke="#475569" stroke-width="4"/>
+          <line x1="150" y1="117" x2="150" y2="145" stroke="#475569" stroke-width="4"/>
+          <!-- Head & Body on bench -->
+          <circle cx="50" cy="98" r="8" fill="#10b981"/>
+          <line x1="56" y1="102" x2="125" y2="102" stroke="#10b981" stroke-width="6" stroke-linecap="round"/>
+          <line x1="125" y1="102" x2="145" y2="135" stroke="#38bdf8" stroke-width="4"/>
+          <!-- Arms & Barbell Motion -->
+          <line x1="85" y1="102" x2="85" y2="60" stroke="#34d399" stroke-width="4"/>
+          <line x1="50" y1="60" x2="120" y2="60" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="55" cy="60" r="5" fill="#ef4444"/>
+          <circle cx="115" cy="60" r="5" fill="#ef4444"/>
+          <path d="M 85 62 L 85 92" fill="none" stroke="#ec4899" stroke-width="2" stroke-dasharray="3,3"/>
+          <polygon points="85,95 82,90 88,90" fill="#ec4899"/>
+          <text x="75" y="45" fill="#f59e0b" font-size="10" font-weight="bold">肘夾45°·胸部主動迎槓</text>
+        </svg>`
+      },
+      'deadlift': {
+        title: '傳統硬舉 (Deadlift)',
+        category: '全身後側鏈力量霸王',
+        tempo: '啟動拉起 1秒 - 頂峰鎖定 1秒 - 控制下放 2秒',
+        muscles: ['臀大肌', '腿後腱肌群', '豎脊肌', '背闊肌', '小臂握力'],
+        setup: '雙腳與髖同寬，槓鈴桿緊貼小腿迎面骨，雙腳中心踩在槓下。俯身握槓，小腿微向前傾接觸槓鈴。肩胛下沉收緊背闊肌（想像腋下夾橘子），脊椎中立不弓背。',
+        execution: '深吸氣腹壓緊繃，足底像把地板蹬開一樣全力伸膝，槓鈴緊貼小腿上滑；越過膝蓋時髖部主動前推鎖定，身體站直，雙肩後展。下放時先向後屈髖，槓過膝蓋後再屈膝落地。',
+        mistake: '烏龜背彎腰起槓傷腰、槓鈴遠離小腿增加剪切力、頂峰過度向後仰腰（過度超伸）。',
+        breath: '起槓前拉緊背部深吸氣憋氣，拉至頂端站直後呼氣換氣。',
+        reps: '3 組 × 5～8 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <line x1="20" y1="140" x2="180" y2="140" stroke="#334155" stroke-width="3"/>
+          <!-- Starting pose -->
+          <circle cx="95" cy="65" r="8" fill="#10b981"/>
+          <!-- Straight spine -->
+          <line x1="95" y1="70" x2="70" y2="95" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+          <!-- Thigh -->
+          <line x1="70" y1="95" x2="100" y2="115" stroke="#34d399" stroke-width="5" stroke-linecap="round"/>
+          <!-- Shin vertical -->
+          <line x1="100" y1="115" x2="102" y2="140" stroke="#38bdf8" stroke-width="4"/>
+          <!-- Arm straight down to bar -->
+          <line x1="95" y1="73" x2="105" y2="125" stroke="#e2e8f0" stroke-width="3"/>
+          <circle cx="105" cy="125" r="14" fill="none" stroke="#ef4444" stroke-width="4"/>
+          <circle cx="105" cy="125" r="3" fill="#f59e0b"/>
+          <text x="35" y="40" fill="#38bdf8" font-size="10" font-weight="bold">槓鈴緊貼迎面骨上滑</text>
+        </svg>`
+      },
+      'lat-pulldown': {
+        title: '高位滑輪下拉 (Lat Pulldown)',
+        category: '倒三角美背必備',
+        tempo: '快速向下拉 1秒 - 頂峰停頓 1秒 - 慢速回放 2.5秒',
+        muscles: ['背闊肌', '大圓肌', '菱形肌', '肱二頭肌'],
+        setup: '大腿緊密卡在固定泡棉滾輪下，雙手採用寬於肩膀 1.5 倍的全握或半握抓握橫槓。胸口微抬，視線看向斜上方。',
+        execution: '啟動時先沉肩帶動肩胛骨向下收緊，肘部主動引導向腰部兩側夾緊下拉，橫槓下拉至上胸或鎖骨位置，頂峰收縮停頓擠壓背闊肌，隨後控制性慢速放回。',
+        mistake: '身體大幅度向後甩動借力、用手臂二頭肌死拉、聳肩拉至脖子後方損害頸椎。',
+        breath: '下拉發力時呼氣，緩慢向上放回時深吸氣。',
+        reps: '3～4 組 × 8～12 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <!-- Pulley & Cable -->
+          <circle cx="100" cy="20" r="6" fill="#f59e0b"/>
+          <line x1="100" y1="26" x2="100" y2="55" stroke="#94a3b8" stroke-width="2"/>
+          <line x1="60" y1="55" x2="140" y2="55" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+          <!-- Person seated -->
+          <circle cx="100" cy="80" r="8" fill="#10b981"/>
+          <line x1="100" y1="88" x2="98" y2="120" stroke="#10b981" stroke-width="5"/>
+          <!-- Arms pulling down -->
+          <line x1="100" y1="90" x2="75" y2="60" stroke="#34d399" stroke-width="3"/>
+          <line x1="100" y1="90" x2="125" y2="60" stroke="#34d399" stroke-width="3"/>
+          <text x="50" y="150" fill="#38bdf8" font-size="10" font-weight="bold">手肘引導向下·手腕勿扣死</text>
+        </svg>`
+      },
+      'romanian-deadlift': {
+        title: '羅馬尼亞硬舉 (RDL)',
+        category: '蜜桃臀與腿後鏈核心',
+        tempo: '慢速屈髖 3秒 - 底端拉伸 1秒 - 夾臀站直 1秒',
+        muscles: ['腿後腱肌群 (膕繩肌)', '臀大肌', '豎脊肌'],
+        setup: '雙腳與髖同寬站立，雙手握持槓鈴或啞鈴在大腿前側。挺胸收腹，肩胛後收，膝蓋保持微屈（固定角度不深蹲）。',
+        execution: '以髖關節為鉸鏈（Hinge），想像用屁股去關後面的門，將臀部水平向後推。槓鈴緊貼大腿下滑至膝蓋下方，感受腿後側強烈緊繃拉伸，隨後靠臀大肌向前收緊夾臀拉回站直。',
+        mistake: '膝蓋過度彎曲變成深蹲、下放時腰椎彎曲代償、槓鈴遠離腿部。',
+        breath: '向後屈髖時吸氣，向前收臀站直時呼氣。',
+        reps: '3 組 × 8～10 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <line x1="20" y1="140" x2="180" y2="140" stroke="#334155" stroke-width="3"/>
+          <circle cx="120" cy="55" r="8" fill="#10b981"/>
+          <!-- Flat back -->
+          <line x1="120" y1="60" x2="75" y2="85" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+          <!-- Hip pushed back -->
+          <line x1="75" y1="85" x2="85" y2="115" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+          <line x1="85" y1="115" x2="90" y2="140" stroke="#38bdf8" stroke-width="4"/>
+          <!-- Weights below knees -->
+          <line x1="110" y1="65" x2="105" y2="110" stroke="#e2e8f0" stroke-width="3"/>
+          <circle cx="105" cy="110" r="7" fill="#ef4444"/>
+          <text x="30" y="30" fill="#f59e0b" font-size="10" font-weight="bold">屁股向後水平推遠·膝微彎</text>
+        </svg>`
+      },
+      'lateral-raise': {
+        title: '啞鈴側平舉 (Lateral Raise)',
+        category: '打造立體南瓜肩中束',
+        tempo: '舉起 1秒 - 頂峰停頓 0.5秒 - 慢放 2.5秒',
+        muscles: ['三角肌中束'],
+        setup: '雙腳微開站立，雙手各持一啞鈴置於大腿前側。上半身微前傾 5~10 度，肘部保持固定微彎，沉肩避免聳肩。',
+        execution: '以手肘為引導向上抬起啞鈴，像倒水一樣小指略高於拇指，舉至手肘與肩膀齊平（不要超過肩膀過多），在頂峰停頓感受中束緊繃，緩慢下放不要隨意垂落。',
+        mistake: '聳肩用斜方肌代償、身體前後晃動借力、重量過重導致甩手。',
+        breath: '平舉向上時呼氣，下落時吸氣。',
+        reps: '3 組 × 12～15 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <circle cx="100" cy="40" r="9" fill="#10b981"/>
+          <line x1="100" y1="48" x2="100" y2="105" stroke="#10b981" stroke-width="5"/>
+          <line x1="100" y1="105" x2="85" y2="140" stroke="#38bdf8" stroke-width="4"/>
+          <line x1="100" y1="105" x2="115" y2="140" stroke="#38bdf8" stroke-width="4"/>
+          <!-- Arms extended sideways -->
+          <path d="M 50 68 Q 75 62 100 55 Q 125 62 150 68" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="50" cy="68" r="5" fill="#ef4444"/>
+          <circle cx="150" cy="68" r="5" fill="#ef4444"/>
+          <text x="45" y="150" fill="#f59e0b" font-size="10" font-weight="bold">手肘引導·小指微高·勿聳肩</text>
+        </svg>`
+      },
+      'plank': {
+        title: '平板支撐 / 棒式 (Plank)',
+        category: '深層腹橫肌與核心抗伸展',
+        tempo: '持續靜態等長收縮 30～60 秒',
+        muscles: ['腹橫肌', '腹直肌', '臀大肌', '肩胛前鋸肌'],
+        setup: '俯臥於瑜珈墊上，手肘彎曲 90 度支撐於肩膀垂直下方，雙腳併攏腳尖點地。',
+        execution: '腹部主動收縮，骨盆微後傾（消滅腰部過度前凸），夾緊臀大肌與大腿前側。頭部、背部、臀部維持在一條筆直鋼板水平線上，平穩均勻呼吸。',
+        mistake: '塌腰弓背（腰椎下垂劇痛）、屁股抬太高像帳篷（核心失焦）、憋氣不呼吸。',
+        breath: '全程維持均勻呼吸，忌憋氣。',
+        reps: '3 組 × 30～60 秒',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <line x1="20" y1="130" x2="180" y2="130" stroke="#334155" stroke-width="3"/>
+          <circle cx="45" cy="85" r="7" fill="#10b981"/>
+          <!-- Straight body line -->
+          <line x1="50" y1="88" x2="145" y2="108" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+          <!-- Forearm support -->
+          <line x1="60" y1="90" x2="60" y2="128" stroke="#38bdf8" stroke-width="4"/>
+          <line x1="60" y1="128" x2="80" y2="128" stroke="#38bdf8" stroke-width="4"/>
+          <!-- Toes -->
+          <line x1="145" y1="108" x2="148" y2="128" stroke="#94a3b8" stroke-width="4"/>
+          <text x="45" y="45" fill="#10b981" font-size="10" font-weight="bold">頭背臀一條線·骨盆微後傾</text>
+        </svg>`
+      },
+      'cable-crunch': {
+        title: '繩索跪姿捲腹 (Cable Crunch)',
+        category: '六塊腹肌厚度王牌',
+        tempo: '捲起 1.5秒 - 頂峰徹底吐氣 1秒 - 慢放 2.5秒',
+        muscles: ['腹直肌全段', '腱劃深刻度'],
+        setup: '雙膝跪地於龍門架繩索下方，雙手握住繩索置於雙耳兩側鎖死，臀部保持固定在大腿正上方。',
+        execution: '髖部完全不動，主動彎曲胸椎將胸骨捲向恥骨，像煮熟的蝦子一樣把身體捲成圓弧狀，最底端徹底呼盡空氣，停頓 1.5 秒感受腹直肌刀割般緊縮，緩慢有控制地放回。',
+        mistake: '屁股往後坐到腳後跟（變成磕頭動作，腹肌無張力）、手用力拉繩子用手臂代償。',
+        breath: '向下捲曲時大口呼氣，回放伸展時均勻吸氣。',
+        reps: '4 組 × 12～15 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <!-- Cable Pulley -->
+          <circle cx="100" cy="20" r="5" fill="#f59e0b"/>
+          <line x1="100" y1="25" x2="90" y2="55" stroke="#94a3b8" stroke-width="2"/>
+          <line x1="20" y1="140" x2="180" y2="140" stroke="#334155" stroke-width="3"/>
+          <!-- Kneeling pose curling -->
+          <circle cx="85" cy="70" r="8" fill="#10b981"/>
+          <!-- Curved spine -->
+          <path d="M 85 75 Q 70 85 75 105 Q 85 118 100 120" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+          <line x1="100" y1="120" x2="115" y2="138" stroke="#38bdf8" stroke-width="4"/>
+          <text x="45" y="45" fill="#2dd4bf" font-size="10" font-weight="bold">臀部打樁不動·胸骨折向肚臍</text>
+        </svg>`
+      },
+      'legraise': {
+        title: '懸垂舉腿 (Hanging Leg Raise)',
+        category: '下腹殺手與核心抗下墜',
+        tempo: '捲起 1秒 - 頂峰停頓 1秒 - 控制下落 2.5秒',
+        muscles: ['腹直肌下部', '腹外斜肌', '前鋸肌', '握力'],
+        setup: '雙手握住引體向上單槓，沉肩鎖定肩胛骨，避免身體前後晃動。',
+        execution: '不要單純抬大腿，要將「骨盆向上捲起」，想像將尾椎骨捲向胸口！屈膝或直腿將膝蓋抬至胸前高度，頂峰極致擠壓 1 秒，慢速下落不藉助擺盪慣性。',
+        mistake: '身體像鐘擺劇烈前後晃動、只抬大腿不捲骨盆導致髂腰肌酸痛。',
+        breath: '雙腿抬起捲動時呼氣，緩慢下落時吸氣。',
+        reps: '3 組 × 10～15 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <!-- Pull-up Bar -->
+          <line x1="40" y1="20" x2="160" y2="20" stroke="#e2e8f0" stroke-width="5" stroke-linecap="round"/>
+          <!-- Hanging body with legs lifted -->
+          <line x1="100" y1="22" x2="100" y2="45" stroke="#94a3b8" stroke-width="3"/>
+          <circle cx="100" cy="50" r="8" fill="#10b981"/>
+          <line x1="100" y1="58" x2="95" y2="90" stroke="#10b981" stroke-width="5"/>
+          <!-- Legs curled up -->
+          <path d="M 95 90 L 70 85 L 60 70" fill="none" stroke="#34d399" stroke-width="4" stroke-linecap="round"/>
+          <text x="35" y="140" fill="#34d399" font-size="10" font-weight="bold">尾椎向上捲·拒絕鐘擺晃動</text>
+        </svg>`
+      },
+      'warmup-wgs': {
+        title: '世界最偉大伸展 (WGS)',
+        category: '動態關節全方位解鎖',
+        tempo: '每側流暢循環 5～6 次',
+        muscles: ['胸椎旋轉', '髖屈肌', '臀肌', '踝關節背屈'],
+        setup: '俯臥撐起始姿態，將一隻腳向前跨出至同側手掌外側，形成大弓步。',
+        execution: '同側手肘向下嘗試觸碰腳踝內側（拉伸髖部與臀肌），隨後同一手向上旋轉伸展直指天花板，胸椎完全打開，視線跟隨手指，還原後換側。',
+        mistake: '腰椎代償過度扭曲、後膝著地偷懶。',
+        breath: '手肘下沉時呼氣，胸椎向上旋轉打開時吸氣。',
+        reps: '每側 5 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <line x1="20" y1="130" x2="180" y2="130" stroke="#334155" stroke-width="3"/>
+          <circle cx="85" cy="80" r="7" fill="#f97316"/>
+          <!-- Lunge body -->
+          <line x1="85" y1="87" x2="130" y2="110" stroke="#f97316" stroke-width="4"/>
+          <!-- Front leg bent 90 -->
+          <line x1="85" y1="87" x2="70" y2="105" stroke="#fb923c" stroke-width="4"/>
+          <line x1="70" y1="105" x2="70" y2="128" stroke="#38bdf8" stroke-width="4"/>
+          <!-- Arm reaching to sky -->
+          <line x1="85" y1="87" x2="90" y2="40" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+          <polygon points="90,36 86,44 94,44" fill="#fbbf24"/>
+          <text x="40" y="30" fill="#fb923c" font-size="10" font-weight="bold">打開胸椎·深度沉髖活化</text>
+        </svg>`
+      },
+      'warmup-catcow': {
+        title: '貓牛式 + 胸椎旋轉 (Cat-Cow)',
+        category: '脊椎逐節活動度',
+        tempo: '緩慢逐節律動 8～10 次',
+        muscles: ['胸椎段', '豎脊肌', '頸椎與腰椎減壓'],
+        setup: '四足跪姿於軟墊上，雙手在肩膀下方，膝蓋在髖部正下方，背部保持中立。',
+        execution: '【牛式】：吸氣骨盆前傾，腹部下沉，胸口向前向上打開，抬頭看前上方；【貓式】：呼氣骨盆後傾，腹部內收，背部像拱橋一樣高高拱起，低頭看向肚臍。',
+        mistake: '只有脖子動而脊椎不動、手肘彎曲。',
+        breath: '拱背時長呼氣，下沉展胸時深吸氣。',
+        reps: '8～10 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <line x1="20" y1="130" x2="180" y2="130" stroke="#334155" stroke-width="3"/>
+          <!-- Cat arch curve -->
+          <path d="M 60 90 Q 95 60 130 90" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="55" cy="95" r="7" fill="#f59e0b"/>
+          <line x1="60" y1="92" x2="60" y2="128" stroke="#94a3b8" stroke-width="3"/>
+          <line x1="130" y1="92" x2="130" y2="128" stroke="#94a3b8" stroke-width="3"/>
+          <text x="45" y="40" fill="#f59e0b" font-size="10" font-weight="bold">脊椎像波浪逐節捲動</text>
+        </svg>`
+      },
+      'warmup-bridge': {
+        title: '雙腿臀橋頂峰收縮 (Glute Bridge)',
+        category: '喚醒久坐休眠臀大肌',
+        tempo: '推起 1秒 - 頂峰停頓 2秒 - 慢落 1秒',
+        muscles: ['臀大肌', '腿後腱', '骨盆底肌'],
+        setup: '仰臥屈膝，雙腳踩地與肩同寬，腳跟距臀部約一個手掌長，雙手平放體側。',
+        execution: '腳後跟發力蹬地，收緊臀部將骨盆向上頂起，直到膝蓋、髖部與肩膀成一直線。在頂峰全力擠壓臀大肌 2 秒，避免用腰部過度拱起頂高。',
+        mistake: '腰部過度向上頂（腰酸臀部沒發力）、腳跟放太遠導致腿後側抽筋。',
+        breath: '推起時呼氣收腹，下落時吸氣。',
+        reps: '12 次 · 頂峰停2秒',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <line x1="20" y1="130" x2="180" y2="130" stroke="#334155" stroke-width="3"/>
+          <circle cx="50" cy="120" r="7" fill="#10b981"/>
+          <!-- Bridge line -->
+          <line x1="55" y1="122" x2="110" y2="85" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+          <line x1="110" y1="85" x2="140" y2="128" stroke="#38bdf8" stroke-width="4"/>
+          <text x="50" y="55" fill="#10b981" font-size="10" font-weight="bold">頂峰強力夾臀·勿過度拱腰</text>
+        </svg>`
+      },
+      'warmup-bird-dog': {
+        title: '鳥狗式 (Bird-Dog 核心)',
+        category: '脊椎抗旋轉與交叉穩定',
+        tempo: '伸展 1秒 - 頂峰維持 2秒 - 慢速收回',
+        muscles: ['深層腹橫肌', '臀大肌', '多裂肌', '背闊肌'],
+        setup: '四足跪姿，手腕在肩膀下，膝蓋在髖部下，核心收緊保持脊椎完全水平。',
+        execution: '對角線一側手臂與另一側腿同時向前後伸展延長，手腳與軀幹呈一條水平線。保持骨盆水平不傾斜旋轉，頂峰停頓 2 秒後慢速收回。',
+        mistake: '身體左右晃動骨盆翻轉、腰部塌陷拱起。',
+        breath: '伸展時平穩呼氣，收回時吸氣。',
+        reps: '每側 8 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <line x1="20" y1="130" x2="180" y2="130" stroke="#334155" stroke-width="3"/>
+          <!-- Torso flat -->
+          <line x1="75" y1="85" x2="125" y2="85" stroke="#10b981" stroke-width="5"/>
+          <circle cx="70" cy="85" r="7" fill="#10b981"/>
+          <!-- Opposite Arm forward -->
+          <line x1="75" y1="85" x2="35" y2="85" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+          <!-- Opposite Leg backward -->
+          <line x1="125" y1="85" x2="165" y2="85" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+          <!-- Support limbs -->
+          <line x1="75" y1="85" x2="75" y2="128" stroke="#64748b" stroke-width="3"/>
+          <line x1="125" y1="85" x2="125" y2="128" stroke="#64748b" stroke-width="3"/>
+          <text x="35" y="45" fill="#f59e0b" font-size="10" font-weight="bold">對角線延伸·骨盆水平不側翻</text>
+        </svg>`
+      },
+      'warmup-airsquat': {
+        title: '徒手深蹲 (Air Squat)',
+        category: '下肢動態活動與肌溫升高',
+        tempo: '平穩律動 10～12 次',
+        muscles: ['股四頭肌', '臀大肌', '腳踝靈活度'],
+        setup: '雙腳與肩同寬，雙手在胸前握拳或平舉維持平衡。',
+        execution: '臀部順暢向後下坐，雙膝對齊腳尖方向，蹲至大腿與地面平行，起立時臀大肌收緊。',
+        mistake: '腳尖翹起、膝蓋嚴重內扣。',
+        breath: '下蹲吸氣，站起呼氣。',
+        reps: '10～12 次',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <line x1="20" y1="140" x2="180" y2="140" stroke="#334155" stroke-width="3"/>
+          <circle cx="100" cy="65" r="8" fill="#10b981"/>
+          <line x1="100" y1="73" x2="85" y2="105" stroke="#10b981" stroke-width="5"/>
+          <line x1="85" y1="105" x2="115" y2="110" stroke="#34d399" stroke-width="5"/>
+          <line x1="115" y1="110" x2="110" y2="138" stroke="#38bdf8" stroke-width="4"/>
+          <text x="45" y="30" fill="#10b981" font-size="10" font-weight="bold">動態深蹲喚醒臀腿肌群</text>
+        </svg>`
+      },
+      'warmup-jacks': {
+        title: '開合跳 (Jumping Jacks)',
+        category: '全身血液循環與心率激活',
+        tempo: '輕快節奏跳躍 30～45 秒',
+        muscles: ['小腿腓腸肌', '肩膀三角肌', '心肺動態升溫'],
+        setup: '立正站好，雙手自然垂於身體兩側。',
+        execution: '輕快跳起，雙腳向外跳開約略寬於肩，同時雙手由兩側向上舉過頭頂擊掌；隨後輕盈跳回起始姿勢。前腳掌彈性著地，膝蓋微彎緩衝。',
+        mistake: '全腳掌重重砸地震傷膝蓋、腳尖著地時膝蓋內扣。',
+        breath: '保持有節奏自然呼吸。',
+        reps: '30～45 秒',
+        svg: `<svg viewBox="0 0 200 160" class="w-full h-full max-h-44">
+          <circle cx="100" cy="45" r="8" fill="#fb923c"/>
+          <line x1="100" y1="53" x2="100" y2="100" stroke="#fb923c" stroke-width="5"/>
+          <!-- Arms up -->
+          <line x1="100" y1="65" x2="70" y2="35" stroke="#f59e0b" stroke-width="4"/>
+          <line x1="100" y1="65" x2="130" y2="35" stroke="#f59e0b" stroke-width="4"/>
+          <!-- Legs open -->
+          <line x1="100" y1="100" x2="70" y2="140" stroke="#38bdf8" stroke-width="4"/>
+          <line x1="100" y1="100" x2="130" y2="140" stroke="#38bdf8" stroke-width="4"/>
+          <text x="45" y="20" fill="#fb923c" font-size="10" font-weight="bold">前腳掌彈跳·膝蓋微屈緩衝</text>
+        </svg>`
+      }
+    };
+
+    function openExerciseDemo(id) {
+      const demoModal = document.getElementById('demo-modal');
+      const select = document.getElementById('demo-exercise-select');
+      if (select && id) {
+        select.value = id;
+      }
+      renderSelectedDemo(id || 'squat');
+      if (demoModal) {
+        demoModal.classList.remove('hidden');
+        demoModal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function renderSelectedDemo(id) {
+      const demo = EXERCISE_DEMOS[id] || EXERCISE_DEMOS['squat'];
+      document.getElementById('demo-modal-title').textContent = demo.title;
+      document.getElementById('demo-modal-cat').textContent = demo.category;
+      document.getElementById('demo-tempo-tag').textContent = `節奏: ${demo.tempo}`;
+      document.getElementById('demo-setup-text').textContent = demo.setup;
+      document.getElementById('demo-exec-text').textContent = demo.execution;
+      document.getElementById('demo-mistake-text').textContent = demo.mistake;
+      document.getElementById('demo-breath-text').textContent = demo.breath;
+      document.getElementById('demo-reps-text').textContent = demo.reps;
+
+      // Render muscles chips
+      const chipsContainer = document.getElementById('demo-muscles-chips');
+      if (chipsContainer) {
+        chipsContainer.innerHTML = demo.muscles.map(m => 
+          `<span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px]">${m}</span>`
+        ).join('');
+      }
+
+      // Render SVG
+      const svgContainer = document.getElementById('demo-svg-container');
+      if (svgContainer) {
+        svgContainer.innerHTML = demo.svg;
+      }
+    }
+
+    // Multi-Calorie Calculation Hub Logic
+    function updateMultiCalcs() {
+      // 1. Heart Rate (Keytel formula)
+      const hr = parseFloat(document.getElementById('calc-hr-bpm')?.value) || 135;
+      const hrMins = parseFloat(document.getElementById('calc-hr-duration')?.value) || 45;
+      const weight = profile.weight || 75;
+      const age = profile.age || 28;
+      let hrKcal = 0;
+      if (profile.gender === 'male') {
+        hrKcal = ((-55.0969 + (0.6309 * hr) + (0.1988 * weight) + (0.2017 * age)) / 4.184) * hrMins;
+      } else {
+        hrKcal = ((-20.4022 + (0.4472 * hr) - (0.1263 * weight) + (0.074 * age)) / 4.184) * hrMins;
+      }
+      hrKcal = Math.max(10, Math.round(hrKcal));
+      const hrKcalEl = document.getElementById('calc-hr-result-kcal');
+      if (hrKcalEl) hrKcalEl.textContent = hrKcal;
+
+      // 2. Steps Calculation
+      const steps = parseInt(document.getElementById('calc-steps-count')?.value) || 8000;
+      const stepMet = parseFloat(document.getElementById('calc-steps-speed')?.value) || 4.0;
+      const stepKm = ((steps * 0.7) / 1000).toFixed(1);
+      const stepSpeedKmH = stepMet === 3.0 ? 3.5 : (stepMet === 4.0 ? 4.5 : 6.0);
+      const stepMins = Math.round((stepKm / stepSpeedKmH) * 60);
+      const stepKcal = Math.round(stepMet * 3.5 * weight / 200 * stepMins);
+      const stepKmEl = document.getElementById('calc-steps-km');
+      const stepMinsEl = document.getElementById('calc-steps-mins');
+      const stepKcalEl = document.getElementById('calc-steps-result-kcal');
+      if (stepKmEl) stepKmEl.textContent = stepKm;
+      if (stepMinsEl) stepMinsEl.textContent = stepMins;
+      if (stepKcalEl) stepKcalEl.textContent = stepKcal;
+
+      // 3. NEAT Calculation
+      const neatMet = parseFloat(document.getElementById('calc-neat-type')?.value) || 3.5;
+      const neatMins = parseFloat(document.getElementById('calc-neat-duration')?.value) || 30;
+      const neatKcal = Math.round(neatMet * 3.5 * weight / 200 * neatMins);
+      const neatKcalEl = document.getElementById('calc-neat-result-kcal');
+      if (neatKcalEl) neatKcalEl.textContent = neatKcal;
+
+      // 4. EPOC Calculation
+      const epocBase = parseFloat(document.getElementById('calc-epoc-base')?.value) || 350;
+      const epocRate = parseFloat(document.getElementById('calc-epoc-intensity')?.value) || 0.10;
+      const epocKcal = Math.round(epocBase * epocRate);
+      const epocKcalEl = document.getElementById('calc-epoc-result-kcal');
+      if (epocKcalEl) epocKcalEl.textContent = epocKcal;
+    }
+
+    function recordFromCalc(type) {
+      if (!allRecords[selectedDate]) allRecords[selectedDate] = [];
+      let item = null;
+
+      if (type === 'hr') {
+        const hr = document.getElementById('calc-hr-bpm')?.value || '135';
+        const mins = parseInt(document.getElementById('calc-hr-duration')?.value) || 45;
+        const name = document.getElementById('calc-hr-name')?.value || '心率腕錶換算';
+        const kcal = parseInt(document.getElementById('calc-hr-result-kcal')?.textContent) || 300;
+        item = {
+          id: 'hr_' + Date.now(),
+          name: `${name} (心率 ${hr} bpm)`,
+          calories: kcal,
+          duration: mins,
+          category: 'cardio',
+          notes: '依 Keytel 心率公式與個人生理數據精算入帳'
+        };
+      } else if (type === 'steps') {
+        const steps = document.getElementById('calc-steps-count')?.value || '8000';
+        const km = document.getElementById('calc-steps-km')?.textContent || '5.6';
+        const mins = parseInt(document.getElementById('calc-steps-mins')?.textContent) || 60;
+        const kcal = parseInt(document.getElementById('calc-steps-result-kcal')?.textContent) || 280;
+        item = {
+          id: 'steps_' + Date.now(),
+          name: `日常步數燃脂 (${parseInt(steps).toLocaleString()} 步)`,
+          calories: kcal,
+          duration: mins,
+          category: 'cardio',
+          notes: `步行距離約 ${km} 公里`
+        };
+      } else if (type === 'neat') {
+        const select = document.getElementById('calc-neat-type');
+        const typeName = select?.options[select.selectedIndex]?.text.split('(')[0] || 'NEAT 日常活動';
+        const mins = parseInt(document.getElementById('calc-neat-duration')?.value) || 30;
+        const kcal = parseInt(document.getElementById('calc-neat-result-kcal')?.textContent) || 120;
+        const notes = document.getElementById('calc-neat-notes')?.value || '日常非運動性活動產熱';
+        item = {
+          id: 'neat_' + Date.now(),
+          name: `NEAT: ${typeName.trim()}`,
+          calories: kcal,
+          duration: mins,
+          category: 'other',
+          notes: notes
+        };
+      } else if (type === 'epoc') {
+        const base = document.getElementById('calc-epoc-base')?.value || '350';
+        const kcal = parseInt(document.getElementById('calc-epoc-result-kcal')?.textContent) || 35;
+        item = {
+          id: 'epoc_' + Date.now(),
+          name: `EPOC 重訓運動後燃效應 (基底 ${base} kcal)`,
+          calories: kcal,
+          duration: 0,
+          category: 'strength',
+          notes: '運動後 24~48 小時過量氧耗持續燃脂'
+        };
+      } else if (type === 'manual') {
+        const name = document.getElementById('calc-manual-name')?.value || '自訂熱量補登';
+        const kcal = parseInt(document.getElementById('calc-manual-kcal')?.value) || 200;
+        const mins = parseInt(document.getElementById('calc-manual-duration')?.value) || 30;
+        item = {
+          id: 'manual_' + Date.now(),
+          name: name,
+          calories: kcal,
+          duration: mins,
+          category: 'other',
+          notes: '由穿戴手錶或健身器材即時數據輸入'
+        };
+      }
+
+      if (item) {
+        allRecords[selectedDate].push(item);
+        if (typeof saveState === 'function') saveState();
+        if (typeof renderHistory === 'function') renderHistory();
+        if (typeof updateStats === 'function') updateStats();
+
+        // Feedback toast
+        alert(`✅ 已將「${item.name}」(${item.calories} kcal) 成功計入今日運動清單！`);
+      }
+    }
+
+    // Listeners for multi-calc and demo modal
+    const toggleMultiCalcBtn = document.getElementById('toggle-multi-calc-btn');
+    const closeMultiCalcBtn = document.getElementById('close-multi-calc-btn');
+    const multiCalcModal = document.getElementById('multi-calc-modal');
+    if (toggleMultiCalcBtn && multiCalcModal) {
+      toggleMultiCalcBtn.addEventListener('click', () => {
+        multiCalcModal.classList.toggle('hidden');
+        if (!multiCalcModal.classList.contains('hidden')) {
+          updateMultiCalcs();
+          multiCalcModal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    }
+    if (closeMultiCalcBtn && multiCalcModal) {
+      closeMultiCalcBtn.addEventListener('click', () => multiCalcModal.classList.add('hidden'));
+    }
+
+    // Body Fat Measurement & Conversion Center Logic
+    let currentBfMethod = 'navy';
+    let currentCalculatedBf = 23.0;
+
+    function openBodyFatCalcModal() {
+      const modal = document.getElementById('bodyfat-calc-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        updateBodyFatCalculators();
+        modal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function updateBodyFatCalculators() {
+      const height = parseFloat(profile.height) || 172;
+      const weight = parseFloat(profile.weight) || 75;
+      const age = parseInt(profile.age) || 28;
+      const gender = profile.gender || 'male';
+
+      // Update read-only BMI labels
+      const heightLabel = document.getElementById('bf-bmi-height-label');
+      const weightLabel = document.getElementById('bf-bmi-weight-label');
+      if (heightLabel) heightLabel.textContent = height;
+      if (weightLabel) weightLabel.textContent = weight;
+
+      const bmi = weight / Math.pow(height / 100, 2);
+      const bmiValLabel = document.getElementById('bf-bmi-val-label');
+      const bmiCatLabel = document.getElementById('bf-bmi-category-label');
+      if (bmiValLabel) bmiValLabel.textContent = bmi.toFixed(2);
+      if (bmiCatLabel) {
+        if (bmi < 18.5) bmiCatLabel.textContent = '偏瘦體態';
+        else if (bmi < 24) bmiCatLabel.textContent = '標準健康體重';
+        else if (bmi < 27) bmiCatLabel.textContent = '肌肉/過重觀察區間';
+        else bmiCatLabel.textContent = '偏重 (建議積極減脂)';
+      }
+
+      // Hip container visibility / styling based on gender
+      const hipCont = document.getElementById('bf-navy-hip-container');
+      if (hipCont) {
+        const spanEl = hipCont.querySelector('span:last-child');
+        if (gender === 'female') {
+          hipCont.classList.remove('opacity-50');
+          if (spanEl) spanEl.textContent = '女性必測：環繞臀部最寬隆起處';
+        } else {
+          hipCont.classList.add('opacity-50');
+          if (spanEl) spanEl.textContent = '目前為男性：男性公式不需計入臀圍';
+        }
+      }
+
+      // Skinfold labels based on gender
+      const site1 = document.getElementById('bf-skinfold-site1-label');
+      const site2 = document.getElementById('bf-skinfold-site2-label');
+      const site3 = document.getElementById('bf-skinfold-site3-label');
+      if (gender === 'female') {
+        if (site1) site1.textContent = '三頭肌皮褶 (Triceps, mm)';
+        if (site2) site2.textContent = '髂前上棘皮褶 (Suprailiac, mm)';
+        if (site3) site3.textContent = '大腿前側皮褶 (Thigh, mm)';
+      } else {
+        if (site1) site1.textContent = '胸部皮褶 (Chest, mm)';
+        if (site2) site2.textContent = '腹部皮褶 (Abdominal, mm)';
+        if (site3) site3.textContent = '大腿前側皮褶 (Thigh, mm)';
+      }
+
+      // Waist and Neck
+      const waist = parseFloat(document.getElementById('bf-navy-waist')?.value) || 82;
+      const neck = parseFloat(document.getElementById('bf-navy-neck')?.value) || 38;
+      const hip = parseFloat(document.getElementById('bf-navy-hip')?.value) || 95;
+
+      // WHtR
+      const whtr = waist / height;
+      const whtrVal = document.getElementById('bf-whtr-val');
+      const whtrStatus = document.getElementById('bf-whtr-status');
+      const visceralLevel = document.getElementById('bf-visceral-level');
+      if (whtrVal) whtrVal.textContent = whtr.toFixed(3);
+      if (whtrStatus) {
+        if (whtr < 0.4) {
+          whtrStatus.textContent = '偏瘦 (< 0.4)';
+          whtrStatus.className = 'text-[10px] text-cyan-400';
+          if (visceralLevel) visceralLevel.textContent = '等級 1～3 (偏低)';
+        } else if (whtr <= 0.49) {
+          whtrStatus.textContent = '標準健康 (< 0.5) 腹肌潛力高';
+          whtrStatus.className = 'text-[10px] text-emerald-400 font-bold';
+          if (visceralLevel) visceralLevel.textContent = '等級 4～6 (健康標準)';
+        } else if (whtr <= 0.57) {
+          whtrStatus.textContent = '腹部脂肪偏高 (0.5~0.57)';
+          whtrStatus.className = 'text-[10px] text-amber-400 font-bold';
+          if (visceralLevel) visceralLevel.textContent = '等級 7～9 (需留意)';
+        } else {
+          whtrStatus.textContent = '腹部內臟脂肪超標 (> 0.58)';
+          whtrStatus.className = 'text-[10px] text-rose-400 font-bold';
+          if (visceralLevel) visceralLevel.textContent = '等級 10+ (高風險)';
+        }
+      }
+
+      let calculatedBf = 23.0;
+
+      if (currentBfMethod === 'navy') {
+        if (gender === 'male') {
+          const diff = waist - neck;
+          if (diff > 5 && height > 50) {
+            calculatedBf = 495 / (1.0324 - (0.19077 * Math.log10(diff)) + (0.15456 * Math.log10(height))) - 450;
+          }
+        } else {
+          const diff = waist + hip - neck;
+          if (diff > 5 && height > 50) {
+            calculatedBf = 495 / (1.29579 - (0.35004 * Math.log10(diff)) + (0.22100 * Math.log10(height))) - 450;
+          }
+        }
+      } else if (currentBfMethod === 'bmi') {
+        const genderFactor = gender === 'male' ? 1 : 0;
+        calculatedBf = (1.20 * bmi) + (0.23 * age) - (10.8 * genderFactor) - 5.4;
+      } else if (currentBfMethod === 'skinfold') {
+        const s1 = parseFloat(document.getElementById('bf-skinfold-site1')?.value) || 14;
+        const s2 = parseFloat(document.getElementById('bf-skinfold-site2')?.value) || 22;
+        const s3 = parseFloat(document.getElementById('bf-skinfold-site3')?.value) || 16;
+        const sum = s1 + s2 + s3;
+
+        let bodyDensity = 1.05;
+        if (gender === 'male') {
+          bodyDensity = 1.10938 - (0.0008267 * sum) + (0.0000016 * sum * sum) - (0.0002574 * age);
+        } else {
+          bodyDensity = 1.0994921 - (0.0009929 * sum) + (0.0000023 * sum * sum) - (0.0001392 * age);
+        }
+        calculatedBf = (495 / bodyDensity) - 450;
+      } else if (currentBfMethod === 'whtr') {
+        if (gender === 'male') {
+          calculatedBf = Math.max(8, (whtr - 0.35) * 80);
+        } else {
+          calculatedBf = Math.max(14, (whtr - 0.32) * 85);
+        }
+      }
+
+      calculatedBf = Math.min(50, Math.max(5, Math.round(calculatedBf * 10) / 10));
+      currentCalculatedBf = calculatedBf;
+
+      // Update Output Display
+      const resPct = document.getElementById('bf-result-percent');
+      if (resPct) resPct.textContent = calculatedBf.toFixed(1);
+
+      const fatKg = (weight * (calculatedBf / 100)).toFixed(1);
+      const lbmKg = (weight - fatKg).toFixed(1);
+      const resFatKg = document.getElementById('bf-result-fat-kg');
+      const resLbmKg = document.getElementById('bf-result-lbm-kg');
+      if (resFatKg) resFatKg.textContent = fatKg;
+      if (resLbmKg) resLbmKg.textContent = lbmKg;
+
+      // Need to drop to target (15% by default)
+      const targetBf = parseFloat(profile.targetBodyFat) || 15;
+      const dropKg = Math.max(0, (weight - (lbmKg / (1 - targetBf / 100)))).toFixed(1);
+      const resDropKg = document.getElementById('bf-result-need-drop-kg');
+      if (resDropKg) resDropKg.textContent = dropKg;
+
+      // Difference from current profile
+      const diffFromCurr = (calculatedBf - (profile.bodyFat || 23)).toFixed(1);
+      const diffEl = document.getElementById('bf-diff-from-curr');
+      if (diffEl) {
+        if (diffFromCurr > 0) {
+          diffEl.textContent = `比目前設定(${profile.bodyFat || 23}%) +${diffFromCurr}%`;
+        } else if (diffFromCurr < 0) {
+          diffEl.textContent = `比目前設定(${profile.bodyFat || 23}%) ${diffFromCurr}%`;
+        } else {
+          diffEl.textContent = `與目前設定相同 (${profile.bodyFat || 23}%)`;
+        }
+      }
+
+      // Classification Badge
+      const badge = document.getElementById('bf-body-type-badge');
+      if (badge) {
+        if (gender === 'male') {
+          if (calculatedBf < 10) {
+            badge.textContent = '競賽級極致撕裂 (小於 10%)';
+            badge.className = 'text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-500/30';
+          } else if (calculatedBf <= 14) {
+            badge.textContent = '腹肌立體分明健美期 (10%~14%)';
+            badge.className = 'text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30';
+          } else if (calculatedBf <= 17) {
+            badge.textContent = '精實初露腹肌線 (15%~17%)';
+            badge.className = 'text-xs px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 font-semibold border border-teal-500/30';
+          } else if (calculatedBf <= 22) {
+            badge.textContent = '健康普通體態 (18%~22%)';
+            badge.className = 'text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold border border-slate-700';
+          } else {
+            badge.textContent = '健康減脂期 (23% 以上)';
+            badge.className = 'text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30';
+          }
+        } else {
+          if (calculatedBf <= 18) {
+            badge.textContent = '女子運動員級精實 (小於 18%)';
+          } else if (calculatedBf <= 22) {
+            badge.textContent = '健美馬甲線清晰 (19%~22%)';
+          } else if (calculatedBf <= 28) {
+            badge.textContent = '健康標準體態 (23%~28%)';
+          } else {
+            badge.textContent = '積極消脂期 (29% 以上)';
+          }
+        }
+      }
+    }
+
+    // Toggle body fat calc modal
+    const toggleBfCalcBtn = document.getElementById('toggle-bf-calc-btn');
+    const closeBfCalcBtn = document.getElementById('close-bf-calc-btn');
+    const bfCalcModal = document.getElementById('bodyfat-calc-modal');
+    if (toggleBfCalcBtn && bfCalcModal) {
+      toggleBfCalcBtn.addEventListener('click', () => {
+        bfCalcModal.classList.toggle('hidden');
+        if (!bfCalcModal.classList.contains('hidden')) {
+          updateBodyFatCalculators();
+          bfCalcModal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    }
+    if (closeBfCalcBtn && bfCalcModal) {
+      closeBfCalcBtn.addEventListener('click', () => bfCalcModal.classList.add('hidden'));
+    }
+
+    // Tab buttons for body fat
+    document.querySelectorAll('.bf-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.bf-tab-btn').forEach(b => {
+          b.classList.remove('active', 'bg-teal-500/20', 'text-teal-300', 'border-teal-500/40');
+          b.classList.add('bg-slate-800', 'text-slate-400', 'border-transparent');
+        });
+        btn.classList.add('active', 'bg-teal-500/20', 'text-teal-300', 'border-teal-500/40');
+        btn.classList.remove('bg-slate-800', 'text-slate-400', 'border-transparent');
+
+        const tab = btn.getAttribute('data-tab');
+        currentBfMethod = tab;
+        const tag = document.getElementById('bf-active-method-tag');
+        if (tag) {
+          tag.textContent = tab === 'navy' ? '美國海軍皮尺法' :
+            (tab === 'bmi' ? 'Deurenberg BMI公式' :
+            (tab === 'skinfold' ? 'Jackson-Pollock 3點皮褶' : '腰圍身高比 (WHtR)'));
+        }
+        document.querySelectorAll('.bf-panel').forEach(p => p.classList.add('hidden'));
+        const activePanel = document.getElementById(`bf-panel-${tab}`);
+        if (activePanel) activePanel.classList.remove('hidden');
+        updateBodyFatCalculators();
+      });
+    });
+
+    // Input listeners for body fat
+    ['bf-navy-waist', 'bf-navy-neck', 'bf-navy-hip', 'bf-skinfold-site1', 'bf-skinfold-site2', 'bf-skinfold-site3'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', updateBodyFatCalculators);
+        el.addEventListener('change', updateBodyFatCalculators);
+      }
+    });
+
+    // Sync button
+    const applyBfSyncBtn = document.getElementById('apply-bf-sync-btn');
+    if (applyBfSyncBtn) {
+      applyBfSyncBtn.addEventListener('click', () => {
+        profile.bodyFat = currentCalculatedBf;
+        const inputBf = document.getElementById('input-bodyfat');
+        if (inputBf) inputBf.value = currentCalculatedBf;
+        if (typeof saveState === 'function') saveState();
+        if (typeof updateStats === 'function') updateStats();
+        if (typeof updateAbsMilestones === 'function') updateAbsMilestones();
+        updateBodyFatCalculators();
+        alert(`✅ 成功將測算體脂率 (${currentCalculatedBf}%) 同步更新至個人設定與腹肌里程碑！`);
+      });
+    }
+
+    const toggleDemoBtn = document.getElementById('toggle-demo-btn');
+    const closeDemoBtn = document.getElementById('close-demo-btn');
+    const demoModal = document.getElementById('demo-modal');
+    if (toggleDemoBtn && demoModal) {
+      toggleDemoBtn.addEventListener('click', () => {
+        demoModal.classList.toggle('hidden');
+        if (!demoModal.classList.contains('hidden')) {
+          renderSelectedDemo(document.getElementById('demo-exercise-select')?.value || 'squat');
+          demoModal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    }
+    if (closeDemoBtn && demoModal) {
+      closeDemoBtn.addEventListener('click', () => demoModal.classList.add('hidden'));
+    }
+
+    const demoSelect = document.getElementById('demo-exercise-select');
+    if (demoSelect) {
+      demoSelect.addEventListener('change', (e) => {
+        renderSelectedDemo(e.target.value);
+      });
+    }
+
+    const demoAddToTodayBtn = document.getElementById('demo-add-to-today-btn');
+    if (demoAddToTodayBtn) {
+      demoAddToTodayBtn.addEventListener('click', () => {
+        const val = document.getElementById('demo-exercise-select')?.value || 'squat';
+        const demo = EXERCISE_DEMOS[val];
+        if (demo) {
+          if (!allRecords[selectedDate]) allRecords[selectedDate] = [];
+          allRecords[selectedDate].push({
+            id: 'demo_' + Date.now(),
+            name: demo.title.split('(')[0].trim(),
+            calories: 65,
+            duration: 12,
+            category: 'strength',
+            notes: `${demo.tempo} · ${demo.reps}`
+          });
+          if (typeof saveState === 'function') saveState();
+          if (typeof renderHistory === 'function') renderHistory();
+          if (typeof updateStats === 'function') updateStats();
+          alert(`✅ 已將「${demo.title}」帶入今日運動清單！`);
+        }
+      });
+    }
+
+    // Tab buttons for multi-calc
+    document.querySelectorAll('.calc-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.calc-tab-btn').forEach(b => {
+          b.classList.remove('active', 'bg-rose-500/20', 'text-rose-300', 'border-rose-500/40');
+          b.classList.add('bg-slate-800', 'text-slate-400', 'border-transparent');
+        });
+        btn.classList.add('active', 'bg-rose-500/20', 'text-rose-300', 'border-rose-500/40');
+        btn.classList.remove('bg-slate-800', 'text-slate-400', 'border-transparent');
+
+        const tab = btn.getAttribute('data-tab');
+        document.querySelectorAll('.calc-panel').forEach(p => p.classList.add('hidden'));
+        const activePanel = document.getElementById(`calc-panel-${tab}`);
+        if (activePanel) activePanel.classList.remove('hidden');
+        updateMultiCalcs();
+      });
+    });
+
+    // Auto-update inputs in multi-calc
+    ['calc-hr-bpm', 'calc-hr-duration', 'calc-steps-count', 'calc-steps-speed', 'calc-neat-type', 'calc-neat-duration', 'calc-epoc-base', 'calc-epoc-intensity'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', updateMultiCalcs);
+        el.addEventListener('change', updateMultiCalcs);
+      }
+    });
+
     const headerWeightDisplay = document.getElementById('header-weight-display');
     const profileCard = document.getElementById('profile-card');
     const openProfileBtn = document.getElementById('open-profile-btn');
@@ -1927,15 +3573,85 @@
       }
     }
 
-    if (openProfileBtn) openProfileBtn.addEventListener('click', () => toggleProfileDrawer());
+    const toggleWarmupBtn = document.getElementById('toggle-warmup-btn');
+    const toggleWarmupText = document.getElementById('toggle-warmup-text');
+    const warmupModal = document.getElementById('warmup-modal');
+    const closeWarmupBtn = document.getElementById('close-warmup-btn');
+
+    function toggleWarmupDrawer(forceOpen = null) {
+      if (!warmupModal) return;
+      const shouldOpen = forceOpen !== null ? forceOpen : warmupModal.classList.contains('hidden');
+      if (shouldOpen) {
+        warmupModal.classList.remove('hidden');
+        if (toggleWarmupText) toggleWarmupText.textContent = '收起熱身推薦';
+        warmupModal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        warmupModal.classList.add('hidden');
+        if (toggleWarmupText) toggleWarmupText.textContent = '熱身動作推薦';
+      }
+    }
+
+    if (toggleWarmupBtn) toggleWarmupBtn.addEventListener('click', () => toggleWarmupDrawer());
+    if (closeWarmupBtn) closeWarmupBtn.addEventListener('click', () => toggleWarmupDrawer(false));
+
+    window.applyWarmupRoutine = function(type = 'full') {
+      const duration = type === 'quick' ? 5 : 8;
+      const met = 4.0;
+      const curWeight = parseFloat(profile.weight) || 75;
+      const cals = Math.round(met * 3.5 * curWeight / 200 * duration);
+      const newRec = {
+        id: 'warmup-' + Date.now(),
+        name: type === 'quick' ? '快速動態熱身 (5分鐘)' : '全身科學動態熱身 (胸椎/髖關節/肩袖 8分鐘)',
+        type: 'cardio',
+        met: met,
+        duration: duration,
+        calories: cals,
+        sets: 1,
+        reps: duration,
+        weight: 0,
+        notes: '關節滑液分泌、世界最偉大拉伸、提升核心體溫'
+      };
+      if (!allRecords[selectedDate]) allRecords[selectedDate] = [];
+      allRecords[selectedDate].push(newRec);
+      if (window.sayoStorage) {
+        window.sayoStorage.setItem('fitburn_records', JSON.stringify(allRecords));
+      }
+      if (typeof renderDailyList === 'function') renderDailyList();
+      if (typeof updateDashboard === 'function') updateDashboard();
+      if (warmupModal) warmupModal.classList.add('hidden');
+      if (toggleWarmupText) toggleWarmupText.textContent = '熱身動作推薦';
+      const historyEl = document.getElementById('exercise-list');
+      if (historyEl) historyEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
+    const weightStepperMinus = document.getElementById('weight-stepper-minus');
+    const weightStepperPlus = document.getElementById('weight-stepper-plus');
+    if (weightStepperMinus) {
+      weightStepperMinus.addEventListener('click', () => {
+        const cur = parseFloat(inputWeight ? inputWeight.value : profile.weight) || 75;
+        const next = Math.max(30, Math.round((cur - 0.5) * 10) / 10);
+        updateWeightEverywhere(next);
+      });
+    }
+    if (weightStepperPlus) {
+      weightStepperPlus.addEventListener('click', () => {
+        const cur = parseFloat(inputWeight ? inputWeight.value : profile.weight) || 75;
+        const next = Math.min(250, Math.round((cur + 0.5) * 10) / 10);
+        updateWeightEverywhere(next);
+      });
+    }
+    if (inputWeight) {
+      inputWeight.addEventListener('input', (e) => {
+        updateWeightEverywhere(e.target.value);
+      });
+    }
+
+    if (openProfileBtn) openProfileBtn.addEventListener('click', () => toggleProfileDrawer(true));
     if (toggleProfileBtn) toggleProfileBtn.addEventListener('click', () => toggleProfileDrawer());
     if (closeProfileBtn) closeProfileBtn.addEventListener('click', () => toggleProfileDrawer(false));
     if (quickWeightBtn) {
       quickWeightBtn.addEventListener('click', () => {
-        const val = prompt('請輸入最新體重 (kg)：', profile.weight);
-        if (val !== null && val.trim() !== '') {
-          updateWeightEverywhere(val);
-        }
+        toggleProfileDrawer(true);
       });
     }
 
