@@ -6039,7 +6039,91 @@
       }
     });
 
-    loadData();
+    loadData();// 1. 取得當前使用者 ID（確保安全性與隔離資料）
+function getCurrentUserId() {
+    return window.sayoDb && typeof window.sayoDb.getUserId === 'function'
+        ? window.sayoDb.getUserId()
+        : 'guest_user';
+}
+
+// 2. 儲存「FitBurn 個人資料卡」到雲端 (對應 schema 中的 accountProfiles)[cite: 1]
+async function saveAccountProfileToCloud() {
+    const userId = getCurrentUserId();
+    const displayName = document.getElementById('account-display-name').value.trim();
+    const goalNote = document.getElementById('account-goal-note').value.trim();
+
+    const profileData = {
+        authorUserId: userId, // 嚴格綁定使用者 ID
+        displayName: displayName,
+        goalNote: goalNote,
+        updatedAt: new Date().toISOString()
+    };
+
+    try {
+        // 取得現有所有資料，檢查是否已存在該使用者的 Profile
+        const allProfiles = await window.sayoDb.getAll('accountProfiles');
+        const existingProfile = allProfiles.find(p => p.authorUserId === userId);
+
+        if (existingProfile) {
+            // 如果已存在，更新該筆資料 (包含權限檢查)
+            await window.sayoDb.adminUpdate('accountProfiles', existingProfile.id, {
+                ...profileData,
+                authorUserId: userId
+            });
+        } else {
+            // 如果不存在，新增一筆
+            await window.sayoDb.add('accountProfiles', profileData);
+        }
+
+        // 更新介面上的按鈕或標籤文字
+        if (displayName) {
+            document.getElementById('account-profile-label').textContent = displayName;
+        }
+        alert('個人資料已成功儲存並同步！');
+    } catch (error) {
+        console.error('儲存個人資料失敗：', error);
+        alert('儲存失敗，請稍後再試。');
+    }
+}
+
+// 3. 從雲端載入「FitBurn 個人資料卡」[cite: 1]
+async function loadAccountProfileFromCloud() {
+    const userId = getCurrentUserId();
+    try {
+        const allProfiles = await window.sayoDb.getAll('accountProfiles');
+        // 前端過濾：只抓取屬於自己的資料
+        const userProfile = allProfiles.find(p => p.authorUserId === userId);
+
+        if (userProfile) {
+            document.getElementById('account-display-name').value = userProfile.displayName || '';
+            document.getElementById('account-goal-note').value = userProfile.goalNote || '';
+            
+            if (userProfile.displayName) {
+                document.getElementById('account-profile-label').textContent = userProfile.displayName;
+            }
+        }
+    } catch (error) {
+        console.error('載入個人資料失敗：', error);
+    }
+}
+
+// 4. 綁定按鈕事件
+document.addEventListener('DOMContentLoaded', async () => {
+    // 頁面載入時自動讀取雲端個人資料
+    await loadAccountProfileFromCloud();
+
+    // 綁定儲存按鈕
+    const saveBtn = document.getElementById('save-account-profile-btn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', saveAccountProfileToCloud);
+    }
+
+    // 綁定重新載入按鈕
+    const loadBtn = document.getElementById('load-account-profile-btn');
+    if (loadBtn) {
+        loadBtn.addEventListener('click', loadAccountProfileFromCloud);
+    }
+});
   </script>
 </body>
 </html>
